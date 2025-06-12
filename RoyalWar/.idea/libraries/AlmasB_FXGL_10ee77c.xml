@@ -1,0 +1,25 @@
+<component name="libraryTable">
+  <library name="AlmasB-FXGL-10ee77c">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../../../21.1 source code.zip!/AlmasB-FXGL-10ee77c" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../../../21.1 source code.zip!/AlmasB-FXGL-10ee77c" />
+      <root url="jar://$PROJECT_DIR$/../../../21.1 source code.zip!/AlmasB-FXGL-10ee77c/fxgl-controllerinput/src/main/java" />
+      <root url="jar://$PROJECT_DIR$/../../../21.1 source code.zip!/AlmasB-FXGL-10ee77c/fxgl-core/src/main/java" />
+      <root url="jar://$PROJECT_DIR$/../../../21.1 source code.zip!/AlmasB-FXGL-10ee77c/fxgl-core/src/test/java" />
+      <root url="jar://$PROJECT_DIR$/../../../21.1 source code.zip!/AlmasB-FXGL-10ee77c/fxgl-entity/src/main/java" />
+      <root url="jar://$PROJECT_DIR$/../../../21.1 source code.zip!/AlmasB-FXGL-10ee77c/fxgl-entity/src/test/java" />
+      <root url="jar://$PROJECT_DIR$/../../../21.1 source code.zip!/AlmasB-FXGL-10ee77c/fxgl-intelligence/src/main/java" />
+      <root url="jar://$PROJECT_DIR$/../../../21.1 source code.zip!/AlmasB-FXGL-10ee77c/fxgl-io/src/main/java" />
+      <root url="jar://$PROJECT_DIR$/../../../21.1 source code.zip!/AlmasB-FXGL-10ee77c/fxgl-samples/src/main/java" />
+      <root url="jar://$PROJECT_DIR$/../../../21.1 source code.zip!/AlmasB-FXGL-10ee77c/fxgl-scene/src/main/java" />
+      <root url="jar://$PROJECT_DIR$/../../../21.1 source code.zip!/AlmasB-FXGL-10ee77c/fxgl-test/src/main/java" />
+      <root url="jar://$PROJECT_DIR$/../../../21.1 source code.zip!/AlmasB-FXGL-10ee77c/fxgl-tools/src/main/java" />
+      <root url="jar://$PROJECT_DIR$/../../../21.1 source code.zip!/AlmasB-FXGL-10ee77c/fxgl-zdeploy/src/main/java" />
+      <root url="jar://$PROJECT_DIR$/../../../21.1 source code.zip!/AlmasB-FXGL-10ee77c/fxgl/src/main/java" />
+      <root url="jar://$PROJECT_DIR$/../../../21.1 source code.zip!/AlmasB-FXGL-10ee77c/fxgl/src/main/java-templates" />
+    </SOURCES>
+  </library>
+</component>
