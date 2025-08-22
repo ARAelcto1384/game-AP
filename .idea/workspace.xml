@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="441c5ee7-cb96-4a10-8ab2-ac61d863c0b9" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/RoyalWar/logs/FXGL-12-Jun-2025-06.27.40.log" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/AlmasB_FXGL_10ee77c.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/fxgl_21_1_uber.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/game AP.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/game AP.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -24,10 +30,19 @@
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "git-widget-placeholder": "master",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/ClivkRayaneh/Desktop/code/java&C/game AP",
+    "last_opened_file_path": "C:/Users/ClivkRayaneh/Desktop/openjfx-24.0.1_windows-x64_bin-sdk/javafx-sdk-24.0.1/bin",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Libraries",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "preferences.lookFeel",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -49,6 +64,7 @@
       <updated>1749689647442</updated>
       <workItem from="1749689648543" duration="96000" />
       <workItem from="1755714007314" duration="237000" />
+      <workItem from="1755858663688" duration="1147000" />
     </task>
     <servers />
   </component>
