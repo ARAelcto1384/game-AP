@@ -4,12 +4,11 @@ import java.util.Random;
 
 public class EventManager implements RoundListener {
 
-    private List<Integer> eventRounds; // راندهایی که ممکن است رویداد رخ دهد
+    private List<Integer> eventRounds;
     private Random rnd = new Random();
 
     public EventManager() {
         eventRounds = new ArrayList<>();
-        // برای نمونه: رویداد ممکن است در راندهای 3، 6، 9 رخ دهد
         eventRounds.add(3);
         eventRounds.add(6);
         eventRounds.add(9);
@@ -19,8 +18,14 @@ public class EventManager implements RoundListener {
     public void onRoundStart(int round, GameManager gm) {
         if (eventRounds.contains(round)) {
             Event e = randomEvent();
-            e.applyEffect(gm.getCastle1(), gm.getCastle2());
-            // در گرافیک: اینجا پیام یا انیمیشن نمایش داده می‌شود
+            for (GameEventListener l : gm.getUIListeners()) {
+                l.onEventTriggered(e);
+            }
+            gm.getLogger().log("رویداد: " + e.getName() + " → " + e.getDescription());
+            for (Castle c : gm.getCastles()) {
+                e.applyTo(c);
+            }
+            // در FXGL: نمایش رویداد
         }
     }
 

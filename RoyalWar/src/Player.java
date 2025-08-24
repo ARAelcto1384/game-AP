@@ -28,5 +28,8 @@ public class Player extends Entity {
 
     public int getScore() { return score; }
     public void addScore(int s) { score += s; }
+
+    public void setPosition(Position pos) { this.position = pos; }
+    public void setScore(int s) { this.score = s; }
 }
 

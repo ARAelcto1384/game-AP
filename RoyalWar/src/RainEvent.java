@@ -4,8 +4,8 @@ public class RainEvent extends Event {
     }
 
     @Override
-    public void applyEffect(Castle c1, Castle c2) {
-        if (c1 != null) c1.applyFoodFactor(productionFactor);
-        if (c2 != null) c2.applyFoodFactor(productionFactor);
+    public void applyTo(Castle c) {
+        if (c == null) return;
+        c.applyFoodFactor(productionFactor);
     }
 }

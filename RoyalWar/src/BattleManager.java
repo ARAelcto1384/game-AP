@@ -12,7 +12,6 @@ public class BattleManager implements RoundListener {
 
     @Override
     public void onRoundStart(int round, GameManager gm) {
-        // همه نبردهایی که نوبت اعلام نتیجه‌شان همین راند است را حل کن
         Iterator<Attack> it = scheduled.iterator();
         while (it.hasNext()) {
             Attack a = it.next();
@@ -24,18 +23,39 @@ public class BattleManager implements RoundListener {
     }
 
     private void resolve(Attack a, GameManager gm) {
+
+        // 🎯 Hook شروع نبرد
+        for (GameEventListener l : gm.getUIListeners()) {
+            l.onBattleStarted(a);
+        }
+
+        // 📜 لاگ شروع نبرد (ایمن در برابر null)
+        if (a.getAttacker() != null) {
+            gm.getLogger().log("حمله آغاز شد: " + a.getType() +
+                    " توسط " + a.getAttacker().getName());
+        } else {
+            gm.getLogger().log("حمله هیولا به قلعه " +
+                    a.getTargetCastle().getOwner().getName());
+        }
+
+        // --- منطق نبرد ---
         if (a.isMonsterAsAttacker()) {
             resolveMonsterAgainstCastle(a, gm);
-            return;
         }
-
-        if (a.getType() == AttackType.MONSTER) {
+        else if (a.getType() == AttackType.MONSTER) {
             resolvePlayerVsMonster(a, gm);
-            return;
+        }
+        else {
+            resolvePlayerAgainstCastle(a, gm);
         }
 
-        // RAID یا CONQUER علیه قلعه
-        resolvePlayerAgainstCastle(a, gm);
+        // 🎯 Hook پایان نبرد
+        for (GameEventListener l : gm.getUIListeners()) {
+            l.onBattleResolved(a);
+        }
+
+        // 📜 لاگ پایان نبرد
+        gm.getLogger().log("نبرد پایان یافت: " + a.getType());
     }
 
     private void resolveMonsterAgainstCastle(Attack a, GameManager gm) {
@@ -44,26 +64,18 @@ public class BattleManager implements RoundListener {
         int defense = defensePowerOfCastle(def);
 
         int damage = Math.max(0, attackPower - defense);
-        if (damage > 0) {
-            def.takeDamage(damage);
-        }
-        // اگر سلامت به صفر رسید، از نظر سناریو تصرف می‌شود؛ اما هیولا مالک نمی‌شود.
-        // بنابراین فقط قلعه تخریب‌شده و نیاز به تعمیر خواهد داشت.
+        if (damage > 0) def.takeDamage(damage);
     }
 
     private void resolvePlayerVsMonster(Attack a, GameManager gm) {
         int attackPower = totalAttackPower(a.getUnitsUsed());
         int defense = GameConfig.MONSTER_DEFENSE_BASE;
-
         boolean success = attackPower > defense;
 
-        // بازگرداندن نیروها در صورت موفقیت، و از دست‌دادن کامل در صورت شکست
         Barracks atkBarracks = gm.getBarracksOf(a.getAttacker());
         if (success) {
             if (atkBarracks != null) atkBarracks.addUnits(a.getUnitsUsed());
             a.getAttacker().addScore(GameConfig.MONSTER_KILL_SCORE);
-        } else {
-            // نیروها از بین می‌روند (بازگردانی صورت نمی‌گیرد)
         }
     }
 
@@ -75,29 +87,18 @@ public class BattleManager implements RoundListener {
         int defense = defensePowerOfCastle(def);
 
         if (a.getType() == AttackType.RAID) {
-            boolean success = attackPower > defense;
-            if (success) {
+            if (attackPower > defense) {
                 stealResources(def, gm.getCastleOf(a.getAttacker()));
-                // همه نیروها سالم برمی‌گردند
                 if (atkBarracks != null) atkBarracks.addUnits(a.getUnitsUsed());
-            } else {
-                // شکست: همه نیروها از بین می‌روند
             }
-        } else if (a.getType() == AttackType.CONQUER) {
+        }
+        else if (a.getType() == AttackType.CONQUER) {
             int damage = Math.max(0, attackPower - defense);
-            if (damage > 0) {
-                def.takeDamage(damage);
-            }
-
+            if (damage > 0) def.takeDamage(damage);
             if (def.isDestroyed()) {
-                // انتقال مالکیت قلعه به مهاجم
                 gm.changeCastleOwner(def, a.getAttacker());
-                // بازیابی بخشی از سلامت پس از تصرف
                 def.repair(GameConfig.CAPTURE_RESTORE_HEALTH);
-                // نیروها برمی‌گردند
                 if (atkBarracks != null) atkBarracks.addUnits(a.getUnitsUsed());
-            } else {
-                // هنوز تصرف نشده؛ نیروها از بین می‌روند (قانون ساده برای ترم دومی)
             }
         }
     }
@@ -110,19 +111,15 @@ public class BattleManager implements RoundListener {
 
     private int defensePowerOfCastle(Castle c) {
         int def = 0;
-        if (c.getDefensiveStructure() != null) {
+        if (c.getDefensiveStructure() != null)
             def += c.getDefensiveStructure().getDefensePower();
-        }
-        if (c.getBarracks() != null) {
-            def += c.getBarracks().totalAttackPower(); // همه نیروهای مستقر مدافع‌اند
-        }
+        if (c.getBarracks() != null)
+            def += c.getBarracks().totalAttackPower();
         return def;
     }
 
     private void stealResources(Castle from, Castle to) {
         int percent = GameConfig.RAID_STEAL_PERCENT;
-        if (from == null || to == null) return;
-
         for (ResourceType rt : new ResourceType[]{ResourceType.STONE, ResourceType.WOOD, ResourceType.FOOD}) {
             int have = from.getResources().get(rt);
             int steal = (have * percent) / 100;
@@ -131,6 +128,5 @@ public class BattleManager implements RoundListener {
                 to.getResources().add(rt, steal);
             }
         }
-        // غنیمت طلا (اختیاری): برای سادگی فعلاً انجام نمی‌شود.
     }
 }

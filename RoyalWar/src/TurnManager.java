@@ -3,42 +3,40 @@ import java.util.List;
 
 public class TurnManager {
     private int currentRound = 1;
-    private int currentPlayerId = 1; // 1 یا 2
+    private int currentIndex = 0;     // اندیس بازیکن جاری در players
+    private int playersCount = GameConfig.MIN_PLAYERS;
 
     private List<RoundListener> listeners = new ArrayList<>();
 
+    public void configurePlayersCount(int count) {
+        if (count < GameConfig.MIN_PLAYERS || count > GameConfig.MAX_PLAYERS) {
+            throw new IllegalArgumentException("تعداد بازیکنان باید بین 2 تا 4 باشد.");
+        }
+        this.playersCount = count;
+    }
+
     public int getCurrentRound() { return currentRound; }
-    public int getCurrentPlayerId() { return currentPlayerId; }
+    public int getCurrentIndex() { return currentIndex; }
+    public void setCurrentRound(int round) { this.currentRound = round; }
+    public void setCurrentIndex(int index) { this.currentIndex = index; }
 
     public void addListener(RoundListener l) {
         if (l != null) listeners.add(l);
     }
 
-    public boolean isPlayersTurn(Player p) {
-        return p != null && p.getId() == currentPlayerId;
-    }
-
-    // شروع اولیه نوبت‌ها: راند 1 و بازیکن 1
     public void startFirstRound(GameManager gm) {
         notifyRoundStart(gm);
-        gm.getPlayer1().resetActionForTurn();
-    }
-
-    public void startTurnForCurrentPlayer(GameManager gm) {
-        Player p = (currentPlayerId == 1) ? gm.getPlayer1() : gm.getPlayer2();
-        p.resetActionForTurn();
+        gm.getCurrentPlayer().resetActionForTurn();
     }
 
     public void endTurn(GameManager gm) {
-        if (currentPlayerId == 1) {
-            currentPlayerId = 2;
-            startTurnForCurrentPlayer(gm);
-        } else {
-            currentPlayerId = 1;
+        currentIndex++;
+        if (currentIndex >= playersCount) {
+            currentIndex = 0;
             currentRound++;
             notifyRoundStart(gm);
-            startTurnForCurrentPlayer(gm);
         }
+        gm.getCurrentPlayer().resetActionForTurn();
     }
 
     private void notifyRoundStart(GameManager gm) {

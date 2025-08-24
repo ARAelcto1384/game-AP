@@ -1,39 +1,39 @@
 public class Lobby {
-    private String[] slots = new String[4];
+    private String[] slots = new String[4]; // null یعنی خالی
 
     public boolean addPlayer(String username) {
         if (isInLobby(username)) return true;
         for (int i = 0; i < 4; i++) {
-            if (this.slots[i] == null) {
-                this.slots[i] = username;
+            if (slots[i] == null) {
+                slots[i] = username;
                 return true;
             }
         }
-        return false; //lobby is full!
+        return false;
     }
 
     public void removePlayer(String username) {
         for (int i = 0; i < 4; i++) {
-            if (username != null && username.equals(this.slots[i])) {
-                this.slots[i] = null;
+            if (username != null && username.equals(slots[i])) {
+                slots[i] = null;
             }
         }
     }
 
     public boolean isInLobby(String username) {
-        for (String s : this.slots) {
+        for (String s : slots) {
             if (username != null && username.equals(s)) return true;
         }
         return false;
     }
 
     public String getSlotName(int index) {
-        return this.slots[index];
+        return slots[index];
     }
 
     public int getPlayerCount() {
         int count = 0;
-        for (String s : this.slots) {
+        for (String s : slots) {
             if (s != null) count++;
         }
         return count;
@@ -44,6 +44,10 @@ public class Lobby {
     }
 
     public String[] getAll() {
-        return this.slots;
+        return slots;
+    }
+
+    public void clear() {
+        for (int i = 0; i < 4; i++) slots[i] = null;
     }
 }

@@ -1,31 +1,36 @@
+import java.util.Random;
+
 public class MonsterAI implements RoundListener {
 
-    private int attackIntervalRounds = 3; // هر 3 راند یک‌بار
-    private int energy = 100;             // انرژی اولیه
-    private int baseAttackPower = 10;     // قدرت پایه حمله
-
-    public int getEnergy() { return energy; }
-    public void setEnergy(int energy) { this.energy = energy; }
-
-    public int getBaseAttackPower() { return baseAttackPower; }
-    public void setBaseAttackPower(int baseAttackPower) { this.baseAttackPower = baseAttackPower; }
-
-    public int getAttackIntervalRounds() { return attackIntervalRounds; }
-    public void setAttackIntervalRounds(int attackIntervalRounds) { this.attackIntervalRounds = attackIntervalRounds; }
+    private int attackIntervalRounds = 3;
+    private int energy = 100;
+    private int baseAttackPower = 10;
+    private Random rnd = new Random();
 
     @Override
     public void onRoundStart(int round, GameManager gm) {
-        // کاهش شدت حمله متناسب با انرژی (به عنوان قلاب ساده)
         int effectivePower = (int) Math.max(1, baseAttackPower * (energy / 100.0));
 
-        // اگر زمان حمله دوره‌ای فرا رسیده باشد، یک حمله زمان‌بندی‌شده ثبت می‌کنیم
         if (attackIntervalRounds > 0 && round % attackIntervalRounds == 0) {
-            gm.onMonsterAttackScheduled(round, effectivePower);
+            // انتخاب یک قلعه به صورت تصادفی از همه بازیکنان به جز current
+            Player current = gm.getCurrentPlayer();
+            Player target = null;
+            int tries = 0;
+            while (tries < 10) {
+                Player candidate = gm.getPlayers().get(rnd.nextInt(gm.getPlayers().size()));
+                if (candidate.getId() != current.getId()) {
+                    target = candidate; break;
+                }
+                tries++;
+            }
+            if (target != null) {
+                Castle targetCastle = gm.getCastleOf(target);
+                gm.getBattleManager().schedule(
+                        Attack.monsterAttack(targetCastle, effectivePower, round)
+                );
+            }
         }
 
-        // الگوی ساده برای افت انرژی در طول بازی
-        if (energy > 0) {
-            energy -= 1;
-        }
+        if (energy > 0) energy -= 1;
     }
 }

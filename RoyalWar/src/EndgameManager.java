@@ -5,70 +5,63 @@ public class EndgameManager {
     public void checkAndEndIfNeeded(GameManager gm) {
         if (gm.getGameState() == GameState.ENDED) return;
 
-        Player p1 = gm.getPlayer1();
-        Player p2 = gm.getPlayer2();
-
-        boolean p1OwnsAll = ownsAllCastles(p1, gm);
-        boolean p2OwnsAll = ownsAllCastles(p2, gm);
-
-        int p1Flags = totalFlagsOf(p1, gm);
-        int p2Flags = totalFlagsOf(p2, gm);
-
-        // برد با تصرف همه قلعه‌ها
-        if (p1OwnsAll && !p2OwnsAll) {
-            gm.endGame(p1, "تصرف تمام قلعه‌ها");
-            return;
-        }
-        if (p2OwnsAll && !p1OwnsAll) {
-            gm.endGame(p2, "تصرف تمام قلعه‌ها");
+        // 1) تصرف همه قلعه‌ها
+        Player winnerByConquest = checkConquestWin(gm);
+        if (winnerByConquest != null) {
+            gm.endGame(winnerByConquest, "تصرف تمام قلعه‌ها");
             return;
         }
 
-        // برد با پرچم‌ها
-        boolean p1FlagWin = p1Flags >= FLAG_TARGET;
-        boolean p2FlagWin = p2Flags >= FLAG_TARGET;
-
-        if (p1FlagWin && !p2FlagWin) {
-            gm.endGame(p1, "جمع‌آوری 100 پرچم");
-            return;
-        }
-        if (p2FlagWin && !p1FlagWin) {
-            gm.endGame(p2, "جمع‌آوری 100 پرچم");
-            return;
-        }
-
-        // همزمان هر دو به حد پرچم رسیده‌اند → انتخاب ساده: پرچم بیشتر، سپس امتیاز
-        if (p1FlagWin && p2FlagWin) {
-            if (p1Flags > p2Flags) {
-                gm.endGame(p1, "جمع‌آوری 100 پرچم (برتری تعداد)");
-            } else if (p2Flags > p1Flags) {
-                gm.endGame(p2, "جمع‌آوری 100 پرچم (برتری تعداد)");
-            } else {
-                // تساوی پرچم → امتیاز بازیکن‌ها (در صورت برابری کامل، پیش‌فرض Player1)
-                if (p1.getScore() > p2.getScore()) {
-                    gm.endGame(p1, "جمع‌آوری 100 پرچم (برتری امتیاز)");
-                } else if (p2.getScore() > p1.getScore()) {
-                    gm.endGame(p2, "جمع‌آوری 100 پرچم (برتری امتیاز)");
-                } else {
-                    gm.endGame(p1, "جمع‌آوری 100 پرچم (تساوی کامل، اولویت با Player1)");
-                }
-            }
+        // 2) پرچم‌ها
+        Player winnerByFlags = checkFlagsWin(gm);
+        if (winnerByFlags != null) {
+            gm.endGame(winnerByFlags, "جمع‌آوری 100 پرچم");
         }
     }
 
-    private boolean ownsAllCastles(Player p, GameManager gm) {
-        // در اسکلت فعلی 2 قلعه داریم؛ مالکیت هر دو باید با p باشد
-        return gm.getCastle1().getOwner().getId() == p.getId()
-                && gm.getCastle2().getOwner().getId() == p.getId();
+    private Player checkConquestWin(GameManager gm) {
+        // اگر همه قلعه‌ها مالک یک بازیکن باشند → برنده
+        for (Player p : gm.getPlayers()) {
+            boolean ownsAll = true;
+            for (Castle c : gm.getCastles()) {
+                if (c.getOwner().getId() != p.getId()) {
+                    ownsAll = false; break;
+                }
+            }
+            if (ownsAll) return p;
+        }
+        return null;
+    }
+
+    private Player checkFlagsWin(GameManager gm) {
+        // هر بازیکن که به 100 پرچم برسد برنده است؛ اگر چند نفر، بیشترین پرچم، سپس امتیاز، سپس کمترین id
+        Player candidate = null;
+        int bestFlags = -1;
+        int bestScore = -1;
+
+        for (Player p : gm.getPlayers()) {
+            int flags = totalFlagsOf(p, gm);
+            if (flags >= FLAG_TARGET) {
+                int score = p.getScore();
+                if (candidate == null
+                || flags > bestFlags
+                        || (flags == bestFlags && score > bestScore)
+                        || (flags == bestFlags && score == bestScore && p.getId() < candidate.getId())) {
+                    candidate = p;
+                    bestFlags = flags;
+                    bestScore = score;
+                }
+            }
+        }
+        return candidate;
     }
 
     private int totalFlagsOf(Player p, GameManager gm) {
         int sum = 0;
-        if (gm.getCastle1().getOwner().getId() == p.getId()) {
-            sum += gm.getCastle1().getFlagCount();
-        }
-        if (gm.getCastle2().getOwner().getId() == p.getId()) {
-            sum += gm.getCastle2().getFlagCount();
+        for (Castle c : gm.getCastles()) {
+            if (c.getOwner().getId() == p.getId()) {
+                sum += c.getFlagCount();
+            }
         }
         return sum;
     }

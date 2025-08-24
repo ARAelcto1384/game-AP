@@ -46,6 +46,9 @@ public class Castle {
     public void setOwner(Player newOwner) { this.owner = newOwner; }
     public Position getPosition() { return position; }
 
+    public void setPosition(Position pos) { this.position = pos; }
+    public void setHealth(int h) { this.health = h; }
+
     // ==== ساختمان‌ها ====
     public Barracks getBarracks() { return barracks; }
     public Mine getMine() { return mine; }

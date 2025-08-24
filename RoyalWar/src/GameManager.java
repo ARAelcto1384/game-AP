@@ -4,8 +4,7 @@ import java.util.Random;
 
 public class GameManager {
     private GameMap map;
-    private Player player1;
-    private Player player2;
+    private List<Player> players = new ArrayList<>();
     private MonsterStronghold stronghold;
 
     private TurnManager turnManager = new TurnManager();
@@ -15,10 +14,8 @@ public class GameManager {
     private EventManager eventManager = new EventManager();
     private EndgameManager endgameManager = new EndgameManager();
 
-    private Castle castle1;
-    private Castle castle2;
-    private Market market1;
-    private Market market2;
+    private List<Castle> castles = new ArrayList<>();
+    private List<Market> markets = new ArrayList<>();
 
     private GameState gameState = GameState.RUNNING;
     private Player winner = null;
@@ -26,15 +23,28 @@ public class GameManager {
 
     private Random rnd = new Random();
 
+    private GameLogger logger = new GameLogger();
+    public GameLogger getLogger() { return logger; }
+
+    // سازنده با نام‌ها (2 تا 4 بازیکن)
+    public GameManager(List<String> playerNames) {
+        if (playerNames == null
+        || playerNames.size() < GameConfig.MIN_PLAYERS
+        || playerNames.size() > GameConfig.MAX_PLAYERS) {
+            throw new IllegalArgumentException("تعداد بازیکنان باید بین 2 تا 4 باشد.");
+        }
+        initCore(playerNames);
+    }
+
+    // سازنده قبلی برای سازگاری (پیش‌فرض 2 بازیکن)
     public GameManager() {
-        initCore("Player1", "Player2");
+        List<String> names = new ArrayList<>();
+        names.add("Player1");
+        names.add("Player2");
+        initCore(names);
     }
 
-    public GameManager(String player1Name, String player2Name) {
-        initCore(player1Name, player2Name);
-    }
-
-    private void initCore(String p1Name, String p2Name) {
+    private void initCore(List<String> playerNames) {
         this.map = new GameMap();
 
         MapPersistence io = new MapPersistence();
@@ -44,37 +54,93 @@ public class GameManager {
         map.placeMonsterStronghold();
         this.stronghold = new MonsterStronghold(map.getSize());
 
-        Position c1Pos = map.randomCastlePositionFarFromCenter(rnd);
-        Position c2Pos = map.randomCastlePositionFarFromCenter(rnd);
-        while (c2Pos.getX() == c1Pos.getX() && c2Pos.getY() == c1Pos.getY()) {
-            c2Pos = map.randomCastlePositionFarFromCenter(rnd);
+        // ساخت بازیکنان با id یکتا 1.n
+        for (int i = 0; i < playerNames.size(); i++) {
+            int id = i + 1;
+            String name = playerNames.get(i);
+            players.add(new Player(id, name, null, null)); // موقعیت بعد از تعیین قلعه ست می‌شود
         }
 
-        map.placePlayerCastle(1, c1Pos.getX(), c1Pos.getY());
-        map.placePlayerCastle(2, c2Pos.getX(), c2Pos.getY());
+        // تعیین موقعیت قلعه‌ها با رعایت فاصله‌ها
+        List<Position> positions = pickCastlePositions(players.size());
+        for (int i = 0; i < players.size(); i++) {
+            Player p = players.get(i);
+            Position pos = positions.get(i);
+            map.placePlayerCastle(p.getId(), pos.getX(), pos.getY());
 
-        this.player1 = new Player(1, p1Name, c1Pos, c1Pos);
-        this.player2 = new Player(2, p2Name, c2Pos, c2Pos);
+            // به‌روزرسانی موقعیت بازیکن و ساخت قلعه/مارکت
+            setPlayerStartAndCastle(p, pos);
+        }
 
-        this.castle1 = new Castle(player1, c1Pos);
-        this.castle2 = new Castle(player2, c2Pos);
-        this.market1 = new Market(castle1);
-        this.market2 = new Market(castle2);
+        // پیکربندی TurnManager
+        turnManager.configurePlayersCount(players.size());
 
-        // لیسنرهای آغاز راند
+        // ثبت لیسنرها
         turnManager.addListener(monsterAI);
         turnManager.addListener(productionSystem);
         turnManager.addListener(battleManager);
         turnManager.addListener(eventManager);
 
+        // شروع
         turnManager.startFirstRound(this);
     }
 
-    // Getters
+    private List<Position> pickCastlePositions(int n) {
+        List<Position> out = new ArrayList<>();
+        Position center = new Position(GameConfig.MAP_SIZE / 2, GameConfig.MAP_SIZE / 2);
+
+        while (out.size() < n) {
+            int x = rnd.nextInt(map.getSize());
+            int y = rnd.nextInt(map.getSize());
+            if (!map.isInside(x, y)) continue;
+            if (!map.canPlaceCastleAt(x, y)) continue;
+
+            Position p = new Position(x, y);
+            if (p.manhattanTo(center) < GameConfig.MIN_DIST_FROM_CENTER) continue;
+
+            boolean ok = true;
+            for (Position q : out) {
+                if (p.manhattanTo(q) < GameConfig.MIN_DIST_BETWEEN_CASTLES) {
+                    ok = false; break;
+                }
+            }
+            if (ok) out.add(p);
+        }
+        return out;
+    }
+
+    private void setPlayerStartAndCastle(Player p, Position castlePos) {
+        // موقعیت اولیه بازیکن: روی قلعه خودش
+        try {
+            // اگر Player قبلاً null بوده
+            if (p.getPosition() == null) {
+                // Player extends Entity => سازنده با Position داشتیم؛ اینجا ساده با setter:
+                // برای سازگاری: اگر setter ندارید، Player را بازسازی کنید:
+                // اما ما Player را با سازنده قبلی داریم که نیاز به Position دارد.
+                // پس راه ساده: یک Player جدید می‌سازیم با همان id/name:
+            }
+        } catch (Exception ignored) {}
+
+        // بازسازی امن Player با موقعیت
+        Player rebuilt = new Player(p.getId(), p.getName(), castlePos, castlePos);
+        // جایگزین در لیست
+        int idx = p.getId() - 1;
+        players.set(idx, rebuilt);
+
+        // ساخت قلعه و مارکت
+        Castle c = new Castle(rebuilt, castlePos);
+        castles.add(c);
+        markets.add(new Market(c));
+    }
+
+    // Getters اصلی
     public GameMap getMap() { return map; }
-    public Player getPlayer1() { return player1; }
-    public Player getPlayer2() { return player2; }
     public MonsterStronghold getStronghold() { return stronghold; }
+
+    public List<Player> getPlayers() { return players; }
+    public List<Castle> getCastles() { return castles; }
+    public List<Market> getMarkets() { return markets; }
+
     public TurnManager getTurnManager() { return turnManager; }
     public MonsterAI getMonsterAI() { return monsterAI; }
     public ProductionSystem getProductionSystem() { return productionSystem; }
@@ -82,30 +148,32 @@ public class GameManager {
     public EventManager getEventManager() { return eventManager; }
     public EndgameManager getEndgameManager() { return endgameManager; }
 
-    public Castle getCastle1() { return castle1; }
-    public Castle getCastle2() { return castle2; }
-    public Market getMarket1() { return market1; }
-    public Market getMarket2() { return market2; }
-
     public GameState getGameState() { return gameState; }
     public Player getWinner() { return winner; }
     public String getWinReason() { return winReason; }
 
+    // بازیکن جاری
     public Player getCurrentPlayer() {
-        return (turnManager.getCurrentPlayerId() == 1) ? player1 : player2;
+        return players.get(turnManager.getCurrentIndex());
+    }
+
+    // کمکی‌ها
+    public Player findPlayerById(int id) {
+        for (Player p : players) if (p.getId() == id) return p;
+        return null;
     }
 
     public Castle getCastleOf(Player p) {
         if (p == null) return null;
-        if (castle1.getOwner().getId() == p.getId()) return castle1;
-        if (castle2.getOwner().getId() == p.getId()) return castle2;
+        for (Castle c : castles) if (c.getOwner().getId() == p.getId()) return c;
         return null;
     }
 
-    public Castle getEnemyCastleOf(Player p) {
-        if (p == null) return null;
-        if (castle1.getOwner().getId() == p.getId()) return castle2;
-        return castle1;
+    public Market getMarketOf(Player p) {
+        Castle c = getCastleOf(p);
+        if (c == null) return null;
+        for (Market m : markets) if (m.getCastle() == c) return m;
+        return null;
     }
 
     public Barracks getBarracksOf(Player p) {
@@ -113,14 +181,14 @@ public class GameManager {
         return c != null ? c.getBarracks() : null;
     }
 
-    // کنترل صحت وضعیت قبل از اعمال ورودی‌ها
+    // کنترل وضعیت
     private void ensureRunning() throws GameAlreadyEndedException {
         if (gameState == GameState.ENDED) {
             throw new GameAlreadyEndedException("بازی به پایان رسیده است.");
         }
     }
 
-    // حرکت بازیکن
+    // حرکت
     public void moveCurrentPlayer(Direction dir)
             throws NotYourTurnException, NoActionPointsException,
             InvalidMoveException, MovementBlockException, GameAlreadyEndedException {
@@ -128,40 +196,71 @@ public class GameManager {
         ensureRunning();
 
         Player p = getCurrentPlayer();
-
-        if (!turnManager.isPlayersTurn(p)) {
-            throw new NotYourTurnException("نوبت این بازیکن نیست.");
-        }
+        // TurnManager تضمین کرده نوبت همین بازیکن است؛ کنترل اضافه لازم نیست
         if (!p.hasActionPoint()) {
             throw new NoActionPointsException("هیچ حرکت باقی نمانده است.");
         }
 
         MovementSystem.tryMove(p, dir, map);
         p.consumeActionPoint();
+        logger.log("بازیکن " + p.getName() + " به سمت " + dir + " حرکت کرد (موقعیت جدید: " + p.getPosition() + ")");
+        MovementSystem.tryMove(p, dir, map);
+        for (GameEventListener l : uiListeners) {
+            l.onPlayerMoved(p, p.getPosition());
+        }
+        p.consumeActionPoint();
     }
 
     public void endTurn() throws GameAlreadyEndedException {
         ensureRunning();
+        Player ended = getCurrentPlayer();
+        turnManager.endTurn(this);
+        for (GameEventListener l : uiListeners) {
+            l.onTurnEnded(ended, getCurrentPlayer().getId(), turnManager.getCurrentRound());
+        }
+        logger.log("نوبت بازیکن " + getCurrentPlayer().getName() + " به پایان رسید.");
         turnManager.endTurn(this);
     }
 
+    // حمله هیولا: انتخاب هدفی به‌جز بازیکن جاری
     public void onMonsterAttackScheduled(int round, int effectivePower) {
-        Player other = (turnManager.getCurrentPlayerId() == 1) ? player2 : player1;
-        Castle target = getCastleOf(other);
+        if (players.size() <= 1) return;
+        Player current = getCurrentPlayer();
+
+// انتخاب تصادفی یک بازیکن غیر از current
+        Player targetP = null;
+        int tries = 0;
+        while (tries < 10) {
+            Player candidate = players.get(rnd.nextInt(players.size()));
+            if (candidate.getId() != current.getId()) {
+                targetP = candidate; break;
+            }
+            tries++;
+        }
+        if (targetP == null) return;
+
+        Castle target = getCastleOf(targetP);
         Attack a = Attack.monsterAttack(target, effectivePower, round);
         battleManager.schedule(a);
     }
 
-    public void initiateAttackOnEnemyCastle(AttackType type,
-                                            int soldiers, int archers, int cavalry, int spies, int merchants)
-            throws NotYourTurnException, TooFarToAttackException,
-            InvalidTargetException, UnitNotAvailableException, GameAlreadyEndedException {
+    // حمله به قلعه بازیکن مشخص (چندبازیکنه)
+    public void initiateAttackOnCastle(int targetPlayerId, AttackType type,
+                                       int soldiers, int archers, int cavalry, int spies, int merchants)
+            throws TooFarToAttackException, InvalidTargetException,
+            UnitNotAvailableException, GameAlreadyEndedException {
 
         ensureRunning();
 
         Player attacker = getCurrentPlayer();
+        Player defender = findPlayerById(targetPlayerId);
+
+        if (defender == null || defender.getId() == attacker.getId()) {
+            throw new InvalidTargetException("هدف نامعتبر است.");
+        }
+
         Castle attackerCastle = getCastleOf(attacker);
-        Castle defenderCastle = getEnemyCastleOf(attacker);
+        Castle defenderCastle = getCastleOf(defender);
 
         if (type != AttackType.RAID && type != AttackType.CONQUER) {
             throw new InvalidTargetException("نوع حمله به قلعه نامعتبر است.");
@@ -186,6 +285,7 @@ public class GameManager {
         battleManager.schedule(a);
     }
 
+    // حمله به دژ هیولا
     public void initiateAttackOnMonster(int soldiers, int archers, int cavalry, int spies, int merchants)
             throws TooFarToAttackException, UnitNotAvailableException, GameAlreadyEndedException {
 
@@ -213,25 +313,39 @@ public class GameManager {
         battleManager.schedule(a);
     }
 
-    // تغییر مالکیت قلعه و بررسی شرط برد
+    // تغییر مالکیت قلعه
     public void changeCastleOwner(Castle castle, Player newOwner) {
         castle.setOwner(newOwner);
-        int ownerId = newOwner.getId();
-        map.placePlayerCastle(ownerId, castle.getPosition().getX(), castle.getPosition().getY());
+        logger.log("قلعه در موقعیت " + castle.getPosition() + " به مالکیت " + newOwner.getName() + " درآمد.");
+        map.placePlayerCastle(newOwner.getId(), castle.getPosition().getX(), castle.getPosition().getY());
+        checkWinCondition();
+        castle.setOwner(newOwner);
+        map.placePlayerCastle(newOwner.getId(), castle.getPosition().getX(), castle.getPosition().getY());
+        for (GameEventListener l : uiListeners) {
+            l.onCastleCaptured(castle, newOwner);
+        }
         checkWinCondition();
     }
 
-    // متد عمومی بررسی برد (برای ProductionSystem و دیگر نقاط)
+    // بررسی برد
     public void checkWinCondition() {
         endgameManager.checkAndEndIfNeeded(this);
     }
 
-    // ثبت پایان بازی
+    private List<GameEventListener> uiListeners = new ArrayList<>();
+    public void addUIListener(GameEventListener l) { if (l != null) uiListeners.add(l); }
+    public void removeUIListener(GameEventListener l) { uiListeners.remove(l); }
+    public List<GameEventListener> getUIListeners() { return uiListeners; }
+
     public void endGame(Player winner, String reason) {
+        logger.log("🎯 پایان بازی! برنده: " + winner.getName() + " | دلیل: " + reason);
         if (gameState == GameState.ENDED) return;
         this.gameState = GameState.ENDED;
         this.winner = winner;
         this.winReason = reason;
-        // در فاز FXGL: نمایش پیام برد و قفل‌کردن ورودی‌ها
+        // در FXGL: نمایش پیام و قفل ورودی
+        for (GameEventListener l : uiListeners) {
+            l.onGameEnded(winner, reason);
+        }
     }
 }
