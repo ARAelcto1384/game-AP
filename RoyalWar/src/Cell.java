@@ -1,6 +1,6 @@
 public class Cell {
     private CellType type = CellType.EMPTY;
-    private int ownerId = 0; // 0: ندارد، 1..4: بازیکنان
+    private int ownerId = 0;
 
     public CellType getType() { return type; }
     public void setType(CellType type) { this.type = type; }

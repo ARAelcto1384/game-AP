@@ -26,22 +26,13 @@ public class GameManager {
     private GameLogger logger = new GameLogger();
     public GameLogger getLogger() { return logger; }
 
-    // سازنده با نام‌ها (2 تا 4 بازیکن)
     public GameManager(List<String> playerNames) {
         if (playerNames == null
         || playerNames.size() < GameConfig.MIN_PLAYERS
         || playerNames.size() > GameConfig.MAX_PLAYERS) {
-            throw new IllegalArgumentException("تعداد بازیکنان باید بین 2 تا 4 باشد.");
+            throw new IllegalArgumentException("The number of players should be between 2 and 4!");
         }
         initCore(playerNames);
-    }
-
-    // سازنده قبلی برای سازگاری (پیش‌فرض 2 بازیکن)
-    public GameManager() {
-        List<String> names = new ArrayList<>();
-        names.add("Player1");
-        names.add("Player2");
-        initCore(names);
     }
 
     private void initCore(List<String> playerNames) {
@@ -54,34 +45,27 @@ public class GameManager {
         map.placeMonsterStronghold();
         this.stronghold = new MonsterStronghold(map.getSize());
 
-        // ساخت بازیکنان با id یکتا 1.n
         for (int i = 0; i < playerNames.size(); i++) {
             int id = i + 1;
             String name = playerNames.get(i);
-            players.add(new Player(id, name, null, null)); // موقعیت بعد از تعیین قلعه ست می‌شود
+            players.add(new Player(id, name, null, null));
         }
 
-        // تعیین موقعیت قلعه‌ها با رعایت فاصله‌ها
         List<Position> positions = pickCastlePositions(players.size());
         for (int i = 0; i < players.size(); i++) {
             Player p = players.get(i);
             Position pos = positions.get(i);
             map.placePlayerCastle(p.getId(), pos.getX(), pos.getY());
-
-            // به‌روزرسانی موقعیت بازیکن و ساخت قلعه/مارکت
             setPlayerStartAndCastle(p, pos);
         }
 
-        // پیکربندی TurnManager
         turnManager.configurePlayersCount(players.size());
 
-        // ثبت لیسنرها
         turnManager.addListener(monsterAI);
         turnManager.addListener(productionSystem);
         turnManager.addListener(battleManager);
         turnManager.addListener(eventManager);
 
-        // شروع
         turnManager.startFirstRound(this);
     }
 
@@ -110,30 +94,15 @@ public class GameManager {
     }
 
     private void setPlayerStartAndCastle(Player p, Position castlePos) {
-        // موقعیت اولیه بازیکن: روی قلعه خودش
-        try {
-            // اگر Player قبلاً null بوده
-            if (p.getPosition() == null) {
-                // Player extends Entity => سازنده با Position داشتیم؛ اینجا ساده با setter:
-                // برای سازگاری: اگر setter ندارید، Player را بازسازی کنید:
-                // اما ما Player را با سازنده قبلی داریم که نیاز به Position دارد.
-                // پس راه ساده: یک Player جدید می‌سازیم با همان id/name:
-            }
-        } catch (Exception ignored) {}
-
-        // بازسازی امن Player با موقعیت
         Player rebuilt = new Player(p.getId(), p.getName(), castlePos, castlePos);
-        // جایگزین در لیست
         int idx = p.getId() - 1;
         players.set(idx, rebuilt);
 
-        // ساخت قلعه و مارکت
         Castle c = new Castle(rebuilt, castlePos);
         castles.add(c);
         markets.add(new Market(c));
     }
 
-    // Getters اصلی
     public GameMap getMap() { return map; }
     public MonsterStronghold getStronghold() { return stronghold; }
 
@@ -152,12 +121,10 @@ public class GameManager {
     public Player getWinner() { return winner; }
     public String getWinReason() { return winReason; }
 
-    // بازیکن جاری
     public Player getCurrentPlayer() {
         return players.get(turnManager.getCurrentIndex());
     }
 
-    // کمکی‌ها
     public Player findPlayerById(int id) {
         for (Player p : players) if (p.getId() == id) return p;
         return null;
@@ -181,29 +148,24 @@ public class GameManager {
         return c != null ? c.getBarracks() : null;
     }
 
-    // کنترل وضعیت
     private void ensureRunning() throws GameAlreadyEndedException {
         if (gameState == GameState.ENDED) {
-            throw new GameAlreadyEndedException("بازی به پایان رسیده است.");
+            throw new GameAlreadyEndedException("The game is over!");
         }
     }
 
-    // حرکت
     public void moveCurrentPlayer(Direction dir)
-            throws NotYourTurnException, NoActionPointsException,
+            throws  NoActionPointsException,
             InvalidMoveException, MovementBlockException, GameAlreadyEndedException {
-
         ensureRunning();
-
         Player p = getCurrentPlayer();
-        // TurnManager تضمین کرده نوبت همین بازیکن است؛ کنترل اضافه لازم نیست
         if (!p.hasActionPoint()) {
-            throw new NoActionPointsException("هیچ حرکت باقی نمانده است.");
+            throw new NoActionPointsException("There are no moves left!");
         }
 
         MovementSystem.tryMove(p, dir, map);
         p.consumeActionPoint();
-        logger.log("بازیکن " + p.getName() + " به سمت " + dir + " حرکت کرد (موقعیت جدید: " + p.getPosition() + ")");
+        logger.log("Player " + p.getName() + " to " + dir + " Moved. (new position:" + p.getPosition() + ")");
         MovementSystem.tryMove(p, dir, map);
         for (GameEventListener l : uiListeners) {
             l.onPlayerMoved(p, p.getPosition());
@@ -218,16 +180,14 @@ public class GameManager {
         for (GameEventListener l : uiListeners) {
             l.onTurnEnded(ended, getCurrentPlayer().getId(), turnManager.getCurrentRound());
         }
-        logger.log("نوبت بازیکن " + getCurrentPlayer().getName() + " به پایان رسید.");
+        logger.log(getCurrentPlayer().getName() + "'s turn is over!");
         turnManager.endTurn(this);
     }
 
-    // حمله هیولا: انتخاب هدفی به‌جز بازیکن جاری
     public void onMonsterAttackScheduled(int round, int effectivePower) {
         if (players.size() <= 1) return;
         Player current = getCurrentPlayer();
 
-// انتخاب تصادفی یک بازیکن غیر از current
         Player targetP = null;
         int tries = 0;
         while (tries < 10) {
@@ -244,7 +204,6 @@ public class GameManager {
         battleManager.schedule(a);
     }
 
-    // حمله به قلعه بازیکن مشخص (چندبازیکنه)
     public void initiateAttackOnCastle(int targetPlayerId, AttackType type,
                                        int soldiers, int archers, int cavalry, int spies, int merchants)
             throws TooFarToAttackException, InvalidTargetException,
@@ -256,19 +215,19 @@ public class GameManager {
         Player defender = findPlayerById(targetPlayerId);
 
         if (defender == null || defender.getId() == attacker.getId()) {
-            throw new InvalidTargetException("هدف نامعتبر است.");
+            throw new InvalidTargetException("The target is invalid!");
         }
 
         Castle attackerCastle = getCastleOf(attacker);
         Castle defenderCastle = getCastleOf(defender);
 
         if (type != AttackType.RAID && type != AttackType.CONQUER) {
-            throw new InvalidTargetException("نوع حمله به قلعه نامعتبر است.");
+            throw new InvalidTargetException("The castle attack type is invalid!");
         }
 
         int dist = attacker.getPosition().manhattanTo(defenderCastle.getPosition());
         if (dist > GameConfig.MIN_DISTANCE_TO_ATTACK_CASTLE) {
-            throw new TooFarToAttackException("برای حمله به قلعه دشمن باید نزدیک‌تر شوی.");
+            throw new TooFarToAttackException("To attack the enemy castle, you need to get closer!");
         }
 
         Barracks b = attackerCastle.getBarracks();
@@ -285,7 +244,7 @@ public class GameManager {
         battleManager.schedule(a);
     }
 
-    // حمله به دژ هیولا
+    // Attack on the monster castle
     public void initiateAttackOnMonster(int soldiers, int archers, int cavalry, int spies, int merchants)
             throws TooFarToAttackException, UnitNotAvailableException, GameAlreadyEndedException {
 
@@ -296,7 +255,7 @@ public class GameManager {
 
         int dist = attacker.getPosition().manhattanTo(stronghold.getCenter());
         if (dist > GameConfig.MIN_DISTANCE_TO_ATTACK_MONSTER) {
-            throw new TooFarToAttackException("برای حمله به هیولا باید نزدیک دژ مرکزی باشی.");
+            throw new TooFarToAttackException("To attack the monster, you must be near the central castle!");
         }
 
         Barracks b = attackerCastle.getBarracks();
@@ -313,10 +272,10 @@ public class GameManager {
         battleManager.schedule(a);
     }
 
-    // تغییر مالکیت قلعه
+    // Change castle ownership
     public void changeCastleOwner(Castle castle, Player newOwner) {
         castle.setOwner(newOwner);
-        logger.log("قلعه در موقعیت " + castle.getPosition() + " به مالکیت " + newOwner.getName() + " درآمد.");
+        logger.log("The castle at " + castle.getPosition() + "s location became the property of " + newOwner.getName() + "!");
         map.placePlayerCastle(newOwner.getId(), castle.getPosition().getX(), castle.getPosition().getY());
         checkWinCondition();
         castle.setOwner(newOwner);
@@ -327,7 +286,6 @@ public class GameManager {
         checkWinCondition();
     }
 
-    // بررسی برد
     public void checkWinCondition() {
         endgameManager.checkAndEndIfNeeded(this);
     }
@@ -338,12 +296,11 @@ public class GameManager {
     public List<GameEventListener> getUIListeners() { return uiListeners; }
 
     public void endGame(Player winner, String reason) {
-        logger.log("🎯 پایان بازی! برنده: " + winner.getName() + " | دلیل: " + reason);
+        logger.log("Game over! Winner:" + winner.getName() + " | Reason: " + reason);
         if (gameState == GameState.ENDED) return;
         this.gameState = GameState.ENDED;
         this.winner = winner;
         this.winReason = reason;
-        // در FXGL: نمایش پیام و قفل ورودی
         for (GameEventListener l : uiListeners) {
             l.onGameEnded(winner, reason);
         }

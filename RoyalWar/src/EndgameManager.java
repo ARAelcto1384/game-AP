@@ -5,22 +5,20 @@ public class EndgameManager {
     public void checkAndEndIfNeeded(GameManager gm) {
         if (gm.getGameState() == GameState.ENDED) return;
 
-        // 1) تصرف همه قلعه‌ها
         Player winnerByConquest = checkConquestWin(gm);
         if (winnerByConquest != null) {
-            gm.endGame(winnerByConquest, "تصرف تمام قلعه‌ها");
+            gm.endGame(winnerByConquest, "Capture all the castles");
             return;
         }
 
-        // 2) پرچم‌ها
         Player winnerByFlags = checkFlagsWin(gm);
         if (winnerByFlags != null) {
-            gm.endGame(winnerByFlags, "جمع‌آوری 100 پرچم");
+            gm.endGame(winnerByFlags, "Collecting 100 flags");
         }
     }
 
     private Player checkConquestWin(GameManager gm) {
-        // اگر همه قلعه‌ها مالک یک بازیکن باشند → برنده
+        // If the player owns all the castles, he wins.
         for (Player p : gm.getPlayers()) {
             boolean ownsAll = true;
             for (Castle c : gm.getCastles()) {
@@ -33,24 +31,15 @@ public class EndgameManager {
         return null;
     }
 
+    // Any player who reaches 100 flags wins.
     private Player checkFlagsWin(GameManager gm) {
-        // هر بازیکن که به 100 پرچم برسد برنده است؛ اگر چند نفر، بیشترین پرچم، سپس امتیاز، سپس کمترین id
+
         Player candidate = null;
-        int bestFlags = -1;
-        int bestScore = -1;
 
         for (Player p : gm.getPlayers()) {
             int flags = totalFlagsOf(p, gm);
             if (flags >= FLAG_TARGET) {
-                int score = p.getScore();
-                if (candidate == null
-                || flags > bestFlags
-                        || (flags == bestFlags && score > bestScore)
-                        || (flags == bestFlags && score == bestScore && p.getId() < candidate.getId())) {
-                    candidate = p;
-                    bestFlags = flags;
-                    bestScore = score;
-                }
+                candidate = p;
             }
         }
         return candidate;

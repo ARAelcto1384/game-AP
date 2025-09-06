@@ -5,10 +5,70 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="441c5ee7-cb96-4a10-8ab2-ac61d863c0b9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/AlmasB_FXGL_10ee77c.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/fxgl_21_1_uber.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/game AP.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/game AP.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/AlmasB_FXGL_10ee77c.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/fxgl_21_1_uber.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/RoyalWar/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/RoyalWar.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/data/lobby.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/data/map.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/data/users.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/logs/FXGL-24-Aug-2025-08.26.31.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/logs/FXGL-24-Aug-2025-08.31.39.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/logs/FXGL-24-Aug-2025-08.55.14.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/logs/FXGL-24-Aug-2025-08.58.35.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/logs/FXGL-24-Aug-2025-09.29.16.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/logs/FXGL-24-Aug-2025-09.31.59.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/logs/FXGL-24-Aug-2025-10.59.34.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/logs/FXGL-24-Aug-2025-11.07.01.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/logs/FXGL-24-Aug-2025-11.13.10.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/logs/FXGL-24-Aug-2025-11.22.45.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/royalwar.sav" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/src/Attack.java" beforeDir="false" afterPath="$PROJECT_DIR$/RoyalWar/src/Attack.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/src/AttackType.java" beforeDir="false" afterPath="$PROJECT_DIR$/RoyalWar/src/AttackType.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/src/Barracks.java" beforeDir="false" afterPath="$PROJECT_DIR$/RoyalWar/src/Barracks.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/src/BattleManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/RoyalWar/src/BattleManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/src/Building.java" beforeDir="false" afterPath="$PROJECT_DIR$/RoyalWar/src/Building.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/src/CardManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/RoyalWar/src/CardManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/src/Castle.java" beforeDir="false" afterPath="$PROJECT_DIR$/RoyalWar/src/Castle.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/src/Cell.java" beforeDir="false" afterPath="$PROJECT_DIR$/RoyalWar/src/Cell.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/src/DefensiveStructure.java" beforeDir="false" afterPath="$PROJECT_DIR$/RoyalWar/src/DefensiveStructure.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/src/EconomyManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/RoyalWar/src/EconomyManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/src/EndgameManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/RoyalWar/src/EndgameManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/src/Entity.java" beforeDir="false" afterPath="$PROJECT_DIR$/RoyalWar/src/Entity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/src/Event.java" beforeDir="false" afterPath="$PROJECT_DIR$/RoyalWar/src/Event.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/src/EventManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/RoyalWar/src/EventManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/src/Farm.java" beforeDir="false" afterPath="$PROJECT_DIR$/RoyalWar/src/Farm.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/src/FireEvent.java" beforeDir="false" afterPath="$PROJECT_DIR$/RoyalWar/src/FireEvent.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/src/FullGameTestRunner.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/src/GameConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/RoyalWar/src/GameConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/src/GameLogger.java" beforeDir="false" afterPath="$PROJECT_DIR$/RoyalWar/src/GameLogger.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/src/GameManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/RoyalWar/src/GameManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/src/GameMap.java" beforeDir="false" afterPath="$PROJECT_DIR$/RoyalWar/src/GameMap.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/src/GameStateDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/RoyalWar/src/GameStateDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/src/Lobby.java" beforeDir="false" afterPath="$PROJECT_DIR$/RoyalWar/src/Lobby.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/src/LobbyPersistence.java" beforeDir="false" afterPath="$PROJECT_DIR$/RoyalWar/src/LobbyPersistence.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/src/LumberMill.java" beforeDir="false" afterPath="$PROJECT_DIR$/RoyalWar/src/LumberMill.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/src/MapPersistence.java" beforeDir="false" afterPath="$PROJECT_DIR$/RoyalWar/src/MapPersistence.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/src/Market.java" beforeDir="false" afterPath="$PROJECT_DIR$/RoyalWar/src/Market.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/src/Mine.java" beforeDir="false" afterPath="$PROJECT_DIR$/RoyalWar/src/Mine.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/src/MonsterAI.java" beforeDir="false" afterPath="$PROJECT_DIR$/RoyalWar/src/MonsterAI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/src/MovementSystem.java" beforeDir="false" afterPath="$PROJECT_DIR$/RoyalWar/src/MovementSystem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/src/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/RoyalWar/src/Player.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/src/PopularityManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/RoyalWar/src/PopularityManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/src/Position.java" beforeDir="false" afterPath="$PROJECT_DIR$/RoyalWar/src/Position.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/src/ProductionSystem.java" beforeDir="false" afterPath="$PROJECT_DIR$/RoyalWar/src/ProductionSystem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/src/RainEvent.java" beforeDir="false" afterPath="$PROJECT_DIR$/RoyalWar/src/RainEvent.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/src/ResourceBundle.java" beforeDir="false" afterPath="$PROJECT_DIR$/RoyalWar/src/ResourceBundle.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/src/RoyalWarApp.java" beforeDir="false" afterPath="$PROJECT_DIR$/RoyalWar/src/RoyalWarApp.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/src/SaveLoadManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/RoyalWar/src/SaveLoadManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/src/StormEvent.java" beforeDir="false" afterPath="$PROJECT_DIR$/RoyalWar/src/StormEvent.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/src/TimedCard.java" beforeDir="false" afterPath="$PROJECT_DIR$/RoyalWar/src/TimedCard.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/src/TurnManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/RoyalWar/src/TurnManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/src/UserManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/RoyalWar/src/UserManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/system/Readme.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoyalWar/system/fxgl.bundle" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,31 +86,60 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "master",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/ClivkRayaneh/Desktop/openjfx-24.0.1_windows-x64_bin-sdk/javafx-sdk-24.0.1/bin",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Libraries",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "preferences.lookFeel",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/ClivkRayaneh/Desktop/21.1 source code.zip&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Libraries&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
+  <component name="RunAnythingCache">
+    <myKeys>
+      <visibility group="Gradle Tasks" flag="true" />
+      <visibility group="Grunt" flag="true" />
+      <visibility group="Gulp" flag="true" />
+      <visibility group="HTTP Requests" flag="true" />
+      <visibility group="Maven Goals" flag="true" />
+      <visibility group="Node.js" flag="true" />
+      <visibility group="Recent projects" flag="true" />
+      <visibility group="Run configurations" flag="true" />
+      <visibility group="com.intellij.httpClient.http.request.run.HttpRequestRunAnythingProvider" flag="true" />
+      <visibility group="com.intellij.ide.actions.runAnything.RunAnythingRunConfigurationProvider" flag="true" />
+      <visibility group="com.intellij.ide.actions.runAnything.activity.RunAnythingRecentProjectProvider" flag="true" />
+      <visibility group="com.intellij.lang.javascript.buildTools.grunt.GruntRunAnythingProvider" flag="true" />
+      <visibility group="com.intellij.lang.javascript.buildTools.gulp.GulpRunAnythingProvider" flag="true" />
+      <visibility group="com.intellij.lang.javascript.buildTools.npm.NpmRunAnythingProvider.Npm" flag="true" />
+      <visibility group="com.intellij.lang.javascript.buildTools.npm.NpmRunAnythingProvider.Yarn" flag="true" />
+      <visibility group="com.jetbrains.nodejs.execution.NodeRunAnythingProvider" flag="true" />
+      <visibility group="npm" flag="true" />
+      <visibility group="org.jetbrains.idea.maven.execution.MavenRunAnythingProvider" flag="true" />
+      <visibility group="org.jetbrains.plugins.gradle.execution.GradleRunAnythingProvider" flag="true" />
+      <visibility group="yarn" flag="true" />
+    </myKeys>
+  </component>
+  <component name="RunAnythingContextRecentDirectoryCache">
+    <option name="paths">
+      <recentPaths value="$PROJECT_DIR$" />
+    </option>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-a94e463ab2e7-intellij.indexing.shared.core-IU-243.26053.27" />
-        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-IU-243.26053.27" />
+        <option value="bundled-jdk-9823dce3aa75-a94e463ab2e7-intellij.indexing.shared.core-IU-243.26574.91" />
+        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-IU-243.26574.91" />
       </set>
     </attachedChunks>
   </component>
@@ -65,10 +154,27 @@
       <workItem from="1749689648543" duration="96000" />
       <workItem from="1755714007314" duration="237000" />
       <workItem from="1755858663688" duration="1147000" />
+      <workItem from="1756061812535" duration="180000" />
+      <workItem from="1756061999949" duration="100000" />
+      <workItem from="1757142578991" duration="31000" />
+      <workItem from="1757142619536" duration="407000" />
+      <workItem from="1757143045710" duration="124000" />
+      <workItem from="1757150227351" duration="7000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>

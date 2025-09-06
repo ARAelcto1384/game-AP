@@ -24,7 +24,7 @@ public class UserManager {
                 }
             }
         } catch (IOException e) {
-            System.out.println("❌ خطا در خواندن فایل کاربران.");
+            System.out.println("Error reading user file!");
         }
     }
 
@@ -38,7 +38,7 @@ public class UserManager {
                 bw.newLine();
             }
         } catch (IOException e) {
-            System.out.println("❌ خطا در ذخیره کاربران.");
+            System.out.println("Error saving users!");
         }
     }
 

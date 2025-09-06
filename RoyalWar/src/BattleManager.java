@@ -24,21 +24,19 @@ public class BattleManager implements RoundListener {
 
     private void resolve(Attack a, GameManager gm) {
 
-        // 🎯 Hook شروع نبرد
+        // start war
         for (GameEventListener l : gm.getUIListeners()) {
             l.onBattleStarted(a);
         }
 
-        // 📜 لاگ شروع نبرد (ایمن در برابر null)
         if (a.getAttacker() != null) {
-            gm.getLogger().log("حمله آغاز شد: " + a.getType() +
-                    " توسط " + a.getAttacker().getName());
+            gm.getLogger().log("The attack began: " + a.getType() +
+                    " by " + a.getAttacker().getName());
         } else {
-            gm.getLogger().log("حمله هیولا به قلعه " +
+            gm.getLogger().log("Monster attack on the castle " +
                     a.getTargetCastle().getOwner().getName());
         }
 
-        // --- منطق نبرد ---
         if (a.isMonsterAsAttacker()) {
             resolveMonsterAgainstCastle(a, gm);
         }
@@ -49,13 +47,11 @@ public class BattleManager implements RoundListener {
             resolvePlayerAgainstCastle(a, gm);
         }
 
-        // 🎯 Hook پایان نبرد
+        // end war
         for (GameEventListener l : gm.getUIListeners()) {
             l.onBattleResolved(a);
         }
-
-        // 📜 لاگ پایان نبرد
-        gm.getLogger().log("نبرد پایان یافت: " + a.getType());
+        gm.getLogger().log("The battle ended: " + a.getType());
     }
 
     private void resolveMonsterAgainstCastle(Attack a, GameManager gm) {

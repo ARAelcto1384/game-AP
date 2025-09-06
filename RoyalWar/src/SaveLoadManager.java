@@ -1,11 +1,10 @@
 import java.io.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class SaveLoadManager {
 
-    private static final String SAVE_FILE = "royalwar.sav";
+    private static final String SAVE_FILE = "RoyalWar.sav";
 
     public static void save(GameManager gm) throws IOException {
         List<PlayerDTO> playerDTOs = gm.getPlayers().stream()
@@ -41,7 +40,6 @@ public class SaveLoadManager {
         List<String> names = state.getPlayers().stream().map(PlayerDTO::getName).collect(Collectors.toList());
         GameManager gm = new GameManager(names);
 
-        // بازگرداندن وضعیت
         for (int i = 0; i < gm.getPlayers().size(); i++) {
             Player p = gm.getPlayers().get(i);
             PlayerDTO pd = state.getPlayers().get(i);

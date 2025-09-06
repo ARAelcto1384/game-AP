@@ -2,7 +2,7 @@ public abstract class Building implements Upgradable {
     protected String name;
     protected int level;
     protected int maxLevel = 3;
-    protected int baseUpgradeCostGold; // هزینه ارتقاء برای هر سطح
+    protected int baseUpgradeCostGold;
     protected Castle owner;
 
     public Building(String name, int baseUpgradeCostGold, Castle owner) {
@@ -18,16 +18,16 @@ public abstract class Building implements Upgradable {
     @Override
     public void upgrade() throws NotEnoughGoldException, MaxLevelReachedException {
         if (level >= maxLevel) {
-            throw new MaxLevelReachedException(name + " در بیشترین سطح است.");
+            throw new MaxLevelReachedException(name + " is at the highest level!");
         }
-        int cost = baseUpgradeCostGold * level; // هزینه ارتقا با سطح فعلی
+        int cost = baseUpgradeCostGold * level;
         if (!owner.getResources().consume(ResourceType.GOLD, cost)) {
-            throw new NotEnoughGoldException("طلای کافی برای ارتقاء " + name + " وجود ندارد.");
+            throw new NotEnoughGoldException("There is not enough gold to upgrade " + name + " !");
         }
         level++;
         onUpgrade();
     }
 
-    // رفتار خاص هر ساختمان هنگام ارتقاء
+    // Specific behavior of each building when upgrading
     protected abstract void onUpgrade();
 }

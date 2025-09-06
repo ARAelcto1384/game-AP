@@ -20,7 +20,7 @@ public class MapPersistence {
                 bw.close();
             }
         } catch (IOException e) {
-            System.out.println("خطا در ایجاد فایل نقشه.");
+            System.out.println("Error creating map file!");
         }
     }
 
@@ -42,7 +42,7 @@ public class MapPersistence {
             }
             br.close();
         } catch (IOException e) {
-            System.out.println("خطا در خواندن فایل نقشه.");
+            System.out.println("Error reading map file!");
         }
     }
 }

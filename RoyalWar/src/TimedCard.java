@@ -3,7 +3,7 @@ public class TimedCard implements Card {
     private String description;
     private ResourceType resourceType;
     private double productionMultiplier;
-    private int durationRounds; // مدت اثر به راند
+    private int durationRounds;
     private boolean active;
 
     public TimedCard(String name, String description, ResourceType resourceType,
@@ -30,6 +30,5 @@ public class TimedCard implements Card {
             active = true;
         }
     }
-
     public boolean isActive() { return active; }
 }

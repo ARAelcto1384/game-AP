@@ -14,7 +14,7 @@ public class LobbyPersistence {
                 bw.newLine();
             }
         } catch (IOException e) {
-            System.out.println("❌ خطا در ذخیره لابی.");
+            System.out.println("Error saving lobby!");
         }
     }
 
@@ -29,7 +29,7 @@ public class LobbyPersistence {
                 lobby.getAll()[i] = "-".equals(line) ? null : line;
             }
         } catch (IOException e) {
-            System.out.println("❌ خطا در خواندن لابی.");
+            System.out.println("Error reading lobby!");
         }
     }
 }

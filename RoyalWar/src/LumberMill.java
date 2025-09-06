@@ -6,6 +6,6 @@ public class LumberMill extends Building {
 
     @Override
     protected void onUpgrade() {
-        // افزایش تولید چوب
+        // Increase wood production
     }
 }

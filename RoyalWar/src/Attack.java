@@ -3,12 +3,12 @@ import java.util.List;
 
 public class Attack {
     private AttackType type;
-    private Player attacker;        // ممکن است در حمله هیولا null باشد
-    private Castle targetCastle;    // برای RAID/CONQUER الزامی است
-    private boolean monsterAsAttacker;  // اگر true یعنی حمله از طرف هیولا به قلعه
-    private int fixedAttackPower;       // برای حمله هیولا یا سناریوهایی بدون لیست نیرو
-    private List<Unit> unitsUsed;       // نیروهای مصرف‌شده برای حمله بازیکن
-    private int resolutionRound;        // راند اعلام نتیجه (راند بعدی)
+    private Player attacker;
+    private Castle targetCastle;
+    private boolean monsterAsAttacker;
+    private int fixedAttackPower;
+    private List<Unit> unitsUsed;
+    private int resolutionRound;
 
     public Attack(AttackType type, Player attacker, Castle targetCastle, int resolutionRound) {
         this.type = type;
@@ -20,7 +20,6 @@ public class Attack {
         this.fixedAttackPower = 0;
     }
 
-    // سازنده حمله هیولا به قلعه
     public static Attack monsterAttack(Castle targetCastle, int effectivePower, int resolutionRound) {
         Attack a = new Attack(AttackType.CONQUER, null, targetCastle, resolutionRound);
         a.monsterAsAttacker = true;

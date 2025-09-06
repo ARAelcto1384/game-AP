@@ -3,7 +3,6 @@ import java.util.List;
 import java.util.Random;
 
 public class EventManager implements RoundListener {
-
     private List<Integer> eventRounds;
     private Random rnd = new Random();
 
@@ -25,7 +24,6 @@ public class EventManager implements RoundListener {
             for (Castle c : gm.getCastles()) {
                 e.applyTo(c);
             }
-            // در FXGL: نمایش رویداد
         }
     }
 

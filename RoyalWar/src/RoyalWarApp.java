@@ -20,55 +20,53 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import java.lang.reflect.Method;
 import java.util.*;
-
 import static com.almasb.fxgl.dsl.FXGL.*;
 
 public class RoyalWarApp extends GameApplication {
 
     private enum State { WELCOME, REGISTER, LOGIN, LOBBY, GAME }
     private State currentState = State.WELCOME;
-
-    // کاربر جاری (برای خروج از لابی)
     private String currentUsername = null;
 
-    // مقیاس و رنگ‌ها
-    private static final int TILE = 32; // افزایش سایز برای نمایش بهتر
+    // Scale and colors
+    private static final int TILE = 32;
     private static final String BG_DARK   = "#1f2937";
     private static final String BTN_BLUE  = "#3b82f6";
     private static final String BTN_GREEN = "#10b981";
     private static final String BTN_AMBER = "#f59e0b";
     private static final String TXT_MUTED = "#9ca3af";
 
-    // مدیریت کاربر و لابی
+    // User and lobby management
     private final UserManager userManager   = new UserManager();
     private final Lobby lobby               = new Lobby();
     private final LobbyPersistence lobbyIO  = new LobbyPersistence();
 
-    // اسکلت بازی
+    // Game skeleton
     private GameManager gm;
 
-    // لایه‌های گرافیکی
-    private GameView mapView;       // لایه زمین
-    private GameView markersView;   // قلعه‌های آزاد و دژ هیولا
-    private GameView playersView;   // مهره بازیکنان
+    // Graphic layers
+    private GameView mapView;
+    private GameView markersView;
+    private GameView playersView;
 
     private Group markersGroup = new Group();
     private Group playersGroup = new Group();
     private final Map<Integer, Node> playerTokens = new HashMap<>();
 
-    // HUD و پنل‌ها
+    // HUD and panels
     private Text hudTurnText, hudRoundText, hudInfoText;
     private VBox resourcesPanel;
     private VBox controlsPanel;
 
     @Override
     protected void initSettings(GameSettings settings) {
-        settings.setWidth(1024); // افزایش عرض برای نمایش بهتر پنل‌ها
-        settings.setHeight(768); // افزایش ارتفاع
+        settings.setWidth(1100);
+        settings.setHeight(768);
         settings.setTitle("RoyalWar");
         settings.setIntroEnabled(false);
         settings.setMainMenuEnabled(false);
         settings.setDeveloperMenuEnabled(true);
+        settings.setVersion("1.0");
     }
 
     @Override
@@ -82,12 +80,10 @@ public class RoyalWarApp extends GameApplication {
         onKeyDown(javafx.scene.input.KeyCode.S, () -> { if (currentState == State.GAME) tryMove(GameManager.Direction.DOWN);  });
         onKeyDown(javafx.scene.input.KeyCode.A, () -> { if (currentState == State.GAME) tryMove(GameManager.Direction.LEFT);  });
         onKeyDown(javafx.scene.input.KeyCode.D, () -> { if (currentState == State.GAME) tryMove(GameManager.Direction.RIGHT); });
-        onKeyDown(javafx.scene.input.KeyCode.E, () -> { if (currentState == State.GAME) tryEndTurn();            });
-        onKeyDown(javafx.scene.input.KeyCode.H, () -> { if (currentState == State.GAME) trySave();               });
-        onKeyDown(javafx.scene.input.KeyCode.L, () -> { if (currentState == State.GAME) tryLoad();               });
+        onKeyDown(javafx.scene.input.KeyCode.E, () -> { if (currentState == State.GAME) tryEndTurn(); });
+        onKeyDown(javafx.scene.input.KeyCode.H, () -> { if (currentState == State.GAME) trySave();    });
+        onKeyDown(javafx.scene.input.KeyCode.L, () -> { if (currentState == State.GAME) tryLoad();    });
     }
-
-    // ------------------ صفحات پیش از بازی ------------------
 
     private void showWelcomeScreen() {
         currentState = State.WELCOME;
@@ -95,21 +91,20 @@ public class RoyalWarApp extends GameApplication {
         VBox box = new VBox(20);
         box.setAlignment(Pos.CENTER);
 
-        Text welcome = new Text("🎮 به بازی RoyalWar خوش آمدید!");
+        Text welcome = new Text("Welcome to the RoyalWar game!");
         welcome.setFill(Color.WHITE);
         welcome.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
 
-        Text sub = new Text("لطفاً ثبت‌نام کنید یا وارد شوید تا به لابی بروید");
+        Text sub = new Text("Please register or log in to go to the lobby!");
         sub.setFill(Color.web(TXT_MUTED));
 
-        Button btnLogin    = makeButton("ورود",    BTN_BLUE,  this::showLoginForm);
-        Button btnRegister = makeButton("ثبت‌نام", BTN_GREEN, this::showRegisterForm);
+        Button btnLogin    = makeButton("Login",    BTN_BLUE,  this::showLoginForm);
+        Button btnRegister = makeButton("Register", BTN_GREEN, this::showRegisterForm);
 
         box.getChildren().addAll(welcome, sub, btnLogin, btnRegister);
         setScreen(box);
     }
 
-    // ثبت‌نام: ذخیره کاربر و بازگشت به خوش‌آمدگویی (طبق سناریو)
     private void showRegisterForm() {
         currentState = State.REGISTER;
 
@@ -117,30 +112,28 @@ public class RoyalWarApp extends GameApplication {
         box.setAlignment(Pos.CENTER);
         box.setPadding(new Insets(30));
 
-        Text title = new Text("📋 ثبت‌نام");
+        Text title = new Text("Registration");
         title.setFill(Color.WHITE);
         title.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
 
-        TextField tfUser = new TextField();    tfUser.setPromptText("نام کاربری");
-        PasswordField pfPass = new PasswordField(); pfPass.setPromptText("رمز عبور");
+        TextField tfUser = new TextField();    tfUser.setPromptText("Username");
+        PasswordField pfPass = new PasswordField(); pfPass.setPromptText("Password");
 
-        Button btnSubmit = makeButton("ثبت اطلاعات", BTN_GREEN, () -> {
+        Button btnSubmit = makeButton("Submit", BTN_GREEN, () -> {
             String u = tfUser.getText();
             String p = pfPass.getText();
             if (userManager.register(u, p)) {
-                FXGL.getDialogService().showMessageBox("✅ ثبت‌نام موفق! اکنون از بخش ورود وارد شوید.", this::showWelcomeScreen);
+                FXGL.getDialogService().showMessageBox("Successful registration! Log in now from the login section.", this::showWelcomeScreen);
             } else {
-                FXGL.getDialogService().showMessageBox("❌ نام کاربری تکراری یا نامعتبر.");
+                FXGL.getDialogService().showMessageBox("Duplicate or invalid username!");
             }
         });
 
-        Button btnBack = makeButton("بازگشت", BTN_AMBER, this::showWelcomeScreen);
-
+        Button btnBack = makeButton("Return", BTN_AMBER, this::showWelcomeScreen);
         box.getChildren().addAll(title, tfUser, pfPass, btnSubmit, btnBack);
         setScreen(box);
     }
 
-    // ورود: افزودن به لابی، تنظیم currentUsername و رفتن به صفحه لابی
     private void showLoginForm() {
         currentState = State.LOGIN;
 
@@ -148,14 +141,15 @@ public class RoyalWarApp extends GameApplication {
         box.setAlignment(Pos.CENTER);
         box.setPadding(new Insets(30));
 
-        Text title = new Text("🔐 ورود");
+        Text title = new Text("Login");
         title.setFill(Color.WHITE);
         title.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
 
-        TextField tfUser = new TextField();    tfUser.setPromptText("نام کاربری");
-        PasswordField pfPass = new PasswordField(); pfPass.setPromptText("رمز عبور");
+        TextField tfUser = new TextField();
+        tfUser.setPromptText("Username");
+        PasswordField pfPass = new PasswordField(); pfPass.setPromptText("Password");
 
-        Button btnLogin = makeButton("ورود", BTN_BLUE, () -> {
+        Button btnLogin = makeButton("Login", BTN_BLUE, () -> {
             String u = tfUser.getText();
             String p = pfPass.getText();
             if (userManager.login(u, p)) {
@@ -164,19 +158,18 @@ public class RoyalWarApp extends GameApplication {
                     lobby.addPlayer(u);
                     lobbyIO.save(lobby);
                 }
-                FXGL.getDialogService().showMessageBox("✅ ورود موفق! به لابی منتقل می‌شوید.", this::showLobbyScreen);
+                FXGL.getDialogService().showMessageBox("Successful login! You will be taken to the lobby.", this::showLobbyScreen);
             } else {
-                FXGL.getDialogService().showMessageBox("❌ نام کاربری یا رمز عبور اشتباه.");
+                FXGL.getDialogService().showMessageBox("Wrong username or password!");
             }
         });
 
-        Button btnBack = makeButton("بازگشت", BTN_AMBER, this::showWelcomeScreen);
+        Button btnBack = makeButton("Return", BTN_AMBER, this::showWelcomeScreen);
 
         box.getChildren().addAll(title, tfUser, pfPass, btnLogin, btnBack);
         setScreen(box);
     }
 
-    // لابی: اسلات‌ها + ثبت‌نام/ورود بازیکن جدید + خروج کاربر فعلی + شروع بازی
     private void showLobbyScreen() {
         currentState = State.LOBBY;
 
@@ -184,11 +177,11 @@ public class RoyalWarApp extends GameApplication {
         box.setAlignment(Pos.TOP_CENTER);
         box.setPadding(new Insets(24));
 
-        Text title = new Text("🏰 لابی بازی");
+        Text title = new Text("Game lobby");
         title.setFill(Color.WHITE);
         title.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
 
-        Text currentUserText = new Text("کاربر جاری: " + (currentUsername != null ? currentUsername : "-"));
+        Text currentUserText = new Text("Current user: " + (currentUsername != null ? currentUsername : "-"));
         currentUserText.setFill(Color.web(TXT_MUTED));
 
         VBox slotsBox = new VBox(8);
@@ -199,11 +192,11 @@ public class RoyalWarApp extends GameApplication {
             row.setAlignment(Pos.CENTER);
 
             final String slotName = lobby.getSlotName(i);
-            Text t = new Text("اسلات " + (i + 1) + ": " + (slotName != null ? slotName : "خالی"));
+            Text t = new Text("Slot " + (i + 1) + ": " + (slotName != null ? slotName : "empty!"));
             t.setFill(slotName != null ? Color.LIGHTGREEN : Color.web(TXT_MUTED));
             t.setStyle("-fx-font-size: 14px;");
 
-            Button btnRemove = makeButton("خروج از اسلات", BTN_AMBER, () -> {
+            Button btnRemove = makeButton("Exit the slot", BTN_AMBER, () -> {
                 if (slotName != null) {
                     lobby.removePlayer(slotName);
                     lobbyIO.save(lobby);
@@ -219,17 +212,17 @@ public class RoyalWarApp extends GameApplication {
         int count = lobby.getPlayerCount();
         boolean canStart = lobby.canStartGame();
 
-        Text statusBar = new Text("بازیکنان: " + count + "/4    وضعیت شروع: " + (canStart ? "فعال" : "غیرفعال"));
+        Text statusBar = new Text("Number of players: " + count + "/4  Starting status: " + (canStart ? "Active" : "Disabled"));
         statusBar.setFill(canStart ? Color.LIGHTGREEN : Color.web(TXT_MUTED));
         statusBar.setStyle("-fx-font-size: 14px;");
 
         HBox controls = new HBox(12);
         controls.setAlignment(Pos.CENTER);
 
-        Button btnRegisterNew = makeButton("ثبت‌نام بازیکن جدید", BTN_GREEN, this::showRegisterForm);
-        Button btnLoginNew    = makeButton("ورود بازیکن جدید",   BTN_BLUE,  this::showLoginForm);
+        Button btnRegisterNew = makeButton("New player registration", BTN_GREEN, this::showRegisterForm);
+        Button btnLoginNew    = makeButton("New player login",   BTN_BLUE,  this::showLoginForm);
 
-        Button btnExitUser = makeButton("خروج از لابی", BTN_AMBER, () -> {
+        Button btnExitUser = makeButton("Exit the lobby", BTN_AMBER, () -> {
             if (currentUsername != null) {
                 if (lobby.isInLobby(currentUsername)) {
                     lobby.removePlayer(currentUsername);
@@ -243,9 +236,9 @@ public class RoyalWarApp extends GameApplication {
 
         controls.getChildren().addAll(btnRegisterNew, btnLoginNew, btnExitUser);
 
-        Button btnStart = makeButton("شروع بازی", BTN_AMBER, () -> {
+        Button btnStart = makeButton("Start the game", BTN_AMBER, () -> {
             if (!lobby.canStartGame()) {
-                FXGL.getDialogService().showMessageBox("❌ حداقل دو بازیکن لازم است.");
+                FXGL.getDialogService().showMessageBox("At least two players are required!");
                 return;
             }
             List<String> names = new ArrayList<>();
@@ -258,40 +251,28 @@ public class RoyalWarApp extends GameApplication {
         setScreen(box);
     }
 
-    // ------------------ شروع بازی و لایه‌ها ------------------
-
     private void startGameWithPlayers(List<String> names) {
         currentState = State.GAME;
         getGameScene().clearUINodes();
 
-        // پاک‌سازی لایه‌ها
         playerTokens.clear();
         playersGroup = new Group();
         markersGroup = new Group();
 
-        // ساخت بازی
         gm = new GameManager(names);
-        // حذف خطای addUIListener با استفاده از رابط مناسب
-        if (gm instanceof GameEventNotifier) {
-            ((GameEventNotifier) gm).addUIListener(new GameUIListener());
-        }
+        gm.addUIListener(new GameUIListener());
 
-        // رندر لایه‌ها
+
         renderMap();       // layer 0
         renderMarkers();   // layer 1
         renderPlayers();   // layer 2
 
-        // HUD و پنل‌ها
         initHUD();
         initResourcesPanel();
         initControlsPanel();
-
-        // مقداردهی اولیه
         updateHUD();
         updateResourcesPanel();
     }
-
-    // ------------------ HUD ------------------
 
     private void initHUD() {
         hudTurnText = new Text();   hudTurnText.setFill(Color.WHITE);
@@ -302,7 +283,7 @@ public class RoyalWarApp extends GameApplication {
         hudRoundText.setTranslateX(200);
         hudRoundText.setTranslateY(GameConfig.MAP_SIZE * TILE + 20);
 
-        hudInfoText = new Text("راهنمای کنترل‌ها در پایین راست صفحه");
+        hudInfoText = new Text("Controls guide at the bottom right of the screen");
         hudInfoText.setFill(Color.web("#93c5fd"));
         hudInfoText.setTranslateX(8);
         hudInfoText.setTranslateY(GameConfig.MAP_SIZE * TILE + 44);
@@ -314,11 +295,9 @@ public class RoyalWarApp extends GameApplication {
 
     private void updateHUD() {
         Player cur = gm.getCurrentPlayer();
-        hudTurnText.setText("نوبت: " + cur.getName());
-        hudRoundText.setText("دور: " + gm.getTurnManager().getCurrentIndex());
+        hudTurnText.setText("Turn: " + cur.getName());
+        hudRoundText.setText("Round: " + gm.getTurnManager().getCurrentIndex());
     }
-
-    // ------------------ پنل منابع ------------------
 
     private void initResourcesPanel() {
         resourcesPanel = new VBox(6);
@@ -335,7 +314,7 @@ public class RoyalWarApp extends GameApplication {
     private void updateResourcesPanel() {
         resourcesPanel.getChildren().clear();
 
-        Text title = new Text("منابع");
+        Text title = new Text("Resources");
         title.setFill(Color.WHITE);
         title.setStyle("-fx-font-weight: bold;");
         resourcesPanel.getChildren().add(title);
@@ -359,37 +338,34 @@ public class RoyalWarApp extends GameApplication {
         }
     }
 
-    // تلاش ایمن: خواندن منابع از Player یا Economy (اگر موجود باشند). در غیر این صورت خالی.
     private Map<String, Integer> readResourcesForPlayer(Player p) {
         Map<String, Integer> m = new LinkedHashMap<>();
-        tryGetInt(p, "getGold").ifPresent(v -> m.put("طلا", v));
-        tryGetInt(p, "getFood").ifPresent(v -> m.put("غذا", v));
-        tryGetInt(p, "getWood").ifPresent(v -> m.put("چوب", v));
-        tryGetInt(p, "getStone").ifPresent(v -> m.put("سنگ", v));
+        tryGetInt(p, "getGold").ifPresent(v -> m.put("Gold", v));
+        tryGetInt(p, "getFood").ifPresent(v -> m.put("Food", v));
+        tryGetInt(p, "getWood").ifPresent(v -> m.put("Wood", v));
+        tryGetInt(p, "getStone").ifPresent(v -> m.put("Stone", v));
         if (!m.isEmpty()) return m;
 
         try {
-            Object eco = tryGet(gm, "getEconomy").orElse(null);
+            Object eco = tryGet(gm).orElse(null);
             if (eco != null) {
-                Integer gold = tryGetInt(eco, "getGold", int.class, p.getId()).orElse(null);
-                Integer food = tryGetInt(eco, "getFood", int.class, p.getId()).orElse(null);
-                Integer wood = tryGetInt(eco, "getWood", int.class, p.getId()).orElse(null);
-                Integer stone= tryGetInt(eco, "getStone",int.class, p.getId()).orElse(null);
-                if (gold != null) m.put("طلا", gold);
-                if (food != null) m.put("غذا", food);
-                if (wood != null) m.put("چوب", wood);
-                if (stone!= null) m.put("سنگ", stone);
+                Integer gold = tryGetInt(eco, "getGold", p.getId()).orElse(null);
+                Integer food = tryGetInt(eco, "getFood", p.getId()).orElse(null);
+                Integer wood = tryGetInt(eco, "getWood", p.getId()).orElse(null);
+                Integer stone= tryGetInt(eco, "getStone", p.getId()).orElse(null);
+                if (gold != null) m.put("Gold", gold);
+                if (food != null) m.put("Food", food);
+                if (wood != null) m.put("Wood", wood);
+                if (stone!= null) m.put("Stone", stone);
             }
         } catch (Exception ignore) {}
 
-        // اگر هنوز هیچ منبعی پیدا نشده، مقادیر پیش‌فرض قرار دهید
         if (m.isEmpty()) {
-            m.put("طلا", 100);
-            m.put("غذا", 100);
-            m.put("چوب", 50);
-            m.put("سنگ", 50);
+            m.put("Gold", 100);
+            m.put("Food", 100);
+            m.put("Wood", 50);
+            m.put("Stone", 50);
         }
-
         return m;
     }
 
@@ -402,24 +378,22 @@ public class RoyalWarApp extends GameApplication {
         return Optional.empty();
     }
 
-    private Optional<Integer> tryGetInt(Object obj, String methodName, Class<?> paramType, Object arg) {
+    private Optional<Integer> tryGetInt(Object obj, String methodName, Object arg) {
         try {
-            Method m = obj.getClass().getMethod(methodName, paramType);
+            Method m = obj.getClass().getMethod(methodName, int.class);
             Object res = m.invoke(obj, arg);
             if (res instanceof Number) return Optional.of(((Number) res).intValue());
         } catch (Exception ignored) {}
         return Optional.empty();
     }
 
-    private Optional<Object> tryGet(Object obj, String methodName) {
+    private Optional<Object> tryGet(Object obj) {
         try {
-            Method m = obj.getClass().getMethod(methodName);
+            Method m = obj.getClass().getMethod("getEconomy");
             return Optional.ofNullable(m.invoke(obj));
         } catch (Exception ignored) {}
         return Optional.empty();
     }
-
-    // ------------------ پنل راهنمای کنترل‌ها ------------------
 
     private void initControlsPanel() {
         controlsPanel = new VBox(6);
@@ -431,21 +405,19 @@ public class RoyalWarApp extends GameApplication {
         controlsPanel.setTranslateX(getAppWidth() - 280);
         controlsPanel.setTranslateY(getAppHeight() - 160);
 
-        Text title = new Text("کنترل‌ها");
+        Text title = new Text("Controls");
         title.setFill(Color.WHITE);
         title.setStyle("-fx-font-weight: bold;");
-        Text t1 = new Text("W/A/S/D: حرکت");
+        Text t1 = new Text("Movement: W/A/S/D");
         t1.setFill(Color.LIGHTGRAY);
-        Text t2 = new Text("E: پایان نوبت");
+        Text t2 = new Text("E: End of turn");
         t2.setFill(Color.LIGHTGRAY);
-        Text t3 = new Text("H/L: ذخیره/بارگذاری");
+        Text t3 = new Text("H/L: Save/Load");
         t3.setFill(Color.LIGHTGRAY);
 
         controlsPanel.getChildren().addAll(title, t1, t2, t3);
         addUINode(controlsPanel);
     }
-
-    // ------------------ رندر نقشه، نشانه‌ها، بازیکنان ------------------
 
     private void renderMap() {
         if (mapView != null) {
@@ -473,45 +445,41 @@ public class RoyalWarApp extends GameApplication {
         if (markersView != null) {
             getGameScene().removeGameView(markersView);
         }
-
         GameMap map = gm.getMap();
         for (int y = 0; y < map.getSize(); y++) {
             for (int x = 0; x < map.getSize(); x++) {
                 Cell cell = map.getCell(x, y);
-
                 String type = cell.getType().toString();
                 if ("MONSTER_STRONGHOLD".equals(type)) {
-                    // نمایش هیولا با یک شکل خاص
                     Polygon monster = new Polygon(
                             0, -8,
-                            6, 0,
-                            8, 6,
-                            0, 8,
-                            -8, 6,
-                            -6, 0
+                                     6, 0,
+                                     8, 6,
+                                     0, 8,
+                                     -8, 6,
+                                     -6, 0
                     );
                     monster.setFill(Color.web("#ef4444"));
                     monster.setStroke(Color.BLACK);
                     moveToCellCenter(monster, x, y);
                     markersGroup.getChildren().add(monster);
 
-                    // اضافه کردن متن "هیولا"
-                    Text monsterText = new Text("هیولا");
+                    Text monsterText = new Text("Monster");
                     monsterText.setFill(Color.WHITE);
                     monsterText.setStyle("-fx-font-size: 10px; -fx-font-weight: bold;");
                     moveToCellCenter(monsterText, x, y);
                     monsterText.setTranslateY(monsterText.getTranslateY() + 20);
                     markersGroup.getChildren().add(monsterText);
                 } else if ("PLAYER_CASTLE".equals(type) && cell.getOwnerId() <= 0) {
-                    // نمایش قلعه‌های خالی
+
+                    // show castles
                     Rectangle castle = new Rectangle(12, 12, Color.TRANSPARENT);
                     castle.setStroke(Color.WHITE);
                     castle.setStrokeWidth(1.5);
                     moveToCellCenter(castle, x, y);
                     markersGroup.getChildren().add(castle);
 
-                    // اضافه کردن متن "قلعه"
-                    Text castleText = new Text("قلعه");
+                    Text castleText = new Text("Castle");
                     castleText.setFill(Color.WHITE);
                     castleText.setStyle("-fx-font-size: 10px;");
                     moveToCellCenter(castleText, x, y);
@@ -531,12 +499,12 @@ public class RoyalWarApp extends GameApplication {
         }
         playerTokens.clear();
 
-        // رنگ‌های مختلف برای بازیکنان
+        // Different colors for players
         Color[] playerColors = {
-                Color.web("#2563eb"), // آبی
-                Color.web("#16a34a"), // سبز
-                Color.web("#d97706"), // نارنجی
-                Color.web("#a855f7")  // بنفش
+                Color.web("#2563eb"), // Blue
+                Color.web("#16a34a"), // Green
+                Color.web("#d97706"), // Orange
+                Color.web("#a855f7")  // Purple
         };
 
         for (int i = 0; i < gm.getPlayers().size(); i++) {
@@ -546,7 +514,7 @@ public class RoyalWarApp extends GameApplication {
             c.setStrokeWidth(2);
             setNodeToGrid(c, p.getPosition());
 
-            // اضافه کردن متن نام بازیکن
+            // show player's name
             Text nameText = new Text(p.getName());
             nameText.setFill(Color.WHITE);
             nameText.setStyle("-fx-font-size: 10px; -fx-font-weight: bold;");
@@ -575,79 +543,71 @@ public class RoyalWarApp extends GameApplication {
         setNodeToGrid(n, p.getPosition());
     }
 
-    // ------------------ رنگ‌بندی سلول ------------------
-
     private Color colorFor(Cell cell) {
         String type = cell.getType().toString();
-        if ("OBSTACLE".equals(type))            return Color.web("#4b5563");
-        if ("MONSTER_STRONGHOLD".equals(type))  return Color.web("#7f1d1d");
+        if ("OBSTACLE".equals(type))
+            return Color.web("#4b5563");
+        if ("MONSTER_STRONGHOLD".equals(type))
+            return Color.web("#7f1d1d");
         if ("PLAYER_CASTLE".equals(type)) {
-            if (cell.getOwnerId() <= 0) return Color.web("#374151"); // قلعه آزاد
-            switch (cell.getOwnerId()) {
-                case 1: return Color.web("#1e40af");
-                case 2: return Color.web("#166534");
-                case 3: return Color.web("#92400e");
-                case 4: return Color.web("#7e22ce");
-                default: return Color.web("#1f2937");
-            }
+            if (cell.getOwnerId() <= 0) return Color.web("#374151");
+            return switch (cell.getOwnerId()) {
+                case 1 -> Color.web("#1e40af");
+                case 2 -> Color.web("#166534");
+                case 3 -> Color.web("#92400e");
+                case 4 -> Color.web("#7e22ce");
+                default -> Color.web("#1f2937");
+            };
         }
-        // EMPTY و سایر حالت‌ها
+        //others
         return Color.web("#111827");
     }
-
-    // ------------------ عملیات بازی ------------------
 
     private void tryMove(GameManager.Direction dir) {
         try {
             gm.moveCurrentPlayer(dir);
-            // به روزرسانی فوری رابط کاربری
             updateHUD();
             updateResourcesPanel();
         } catch (Exception e) {
-            FXGL.getNotificationService().pushNotification("⚠ " + e.getMessage());
+            FXGL.getNotificationService().pushNotification(e.getMessage());
         }
     }
 
     private void tryEndTurn() {
         try {
             gm.endTurn();
-            // به روزرسانی فوری رابط کاربری
             updateHUD();
             updateResourcesPanel();
         } catch (Exception e) {
-            FXGL.getNotificationService().pushNotification("⚠ " + e.getMessage());
+            FXGL.getNotificationService().pushNotification(e.getMessage());
         }
     }
 
     private void trySave() {
         try {
             SaveLoadManager.save(gm);
-            FXGL.getNotificationService().pushNotification("💾 ذخیره شد");
+            FXGL.getNotificationService().pushNotification("Saved!");
         } catch (Exception e) {
-            FXGL.getNotificationService().pushNotification("❌ ذخیره با خطا مواجه شد");
+            FXGL.getNotificationService().pushNotification("Save failed!");
         }
     }
 
     private void tryLoad() {
         try {
-            GameManager loaded = SaveLoadManager.load();
-            this.gm = loaded;
-            // حذف خطای addUIListener با استفاده از رابط مناسب
-            if (gm instanceof GameEventNotifier) {
-                ((GameEventNotifier) gm).addUIListener(new GameUIListener());
+            this.gm = SaveLoadManager.load();
+            if (gm != null) {
+                gm.addUIListener(new GameUIListener());
             }
             renderMap();
             renderMarkers();
             renderPlayers();
             updateHUD();
             updateResourcesPanel();
-            FXGL.getNotificationService().pushNotification("📂 بارگذاری شد");
+            FXGL.getNotificationService().pushNotification("Loaded!");
         } catch (Exception e) {
-            FXGL.getNotificationService().pushNotification("❌ بارگذاری با خطا مواجه شد");
+            FXGL.getNotificationService().pushNotification("Loading failed!");
         }
     }
-
-    // ------------------ ابزار مختص مختصات ------------------
 
     private void setNodeToGrid(Node n, Position pos) {
         n.setTranslateX(pos.getX() * TILE + TILE * 0.5);
@@ -659,9 +619,6 @@ public class RoyalWarApp extends GameApplication {
         n.setTranslateY(y * TILE + TILE * 0.5);
     }
 
-    // ------------------ Hookهای UI ------------------
-
-    // ایجاد یک کلاس جداگانه برای مدیریت رویدادهای UI
     private class GameUIListener implements GameEventListener {
         @Override
         public void onPlayerMoved(Player player, Position newPos) {
@@ -686,30 +643,28 @@ public class RoyalWarApp extends GameApplication {
                 renderMap();
                 renderMarkers();
                 updateResourcesPanel();
-                FXGL.getNotificationService().pushNotification(
-                        "🏰 قلعه توسط " + newOwner.getName() + " تصرف شد"
-                );
+                FXGL.getNotificationService().pushNotification("The castle was captured by " + newOwner.getName() + "!");
             });
         }
 
         @Override
         public void onEventTriggered(Event event) {
             Platform.runLater(() ->
-                    FXGL.getNotificationService().pushNotification("🌀 رویداد: " + event.getName())
+                    FXGL.getNotificationService().pushNotification("Event: " + event.getName())
             );
         }
 
         @Override
         public void onBattleStarted(Attack attack) {
             Platform.runLater(() ->
-                    FXGL.getNotificationService().pushNotification("⚔ نبرد: " + attack.getType())
+                    FXGL.getNotificationService().pushNotification("Battle: " + attack.getType())
             );
         }
 
         @Override
         public void onBattleResolved(Attack attack) {
             Platform.runLater(() ->
-                    FXGL.getNotificationService().pushNotification("✅ نبرد پایان یافت")
+                    FXGL.getNotificationService().pushNotification("The battle is over!")
             );
         }
 
@@ -717,21 +672,17 @@ public class RoyalWarApp extends GameApplication {
         public void onGameEnded(Player winner, String reason) {
             Platform.runLater(() ->
                     FXGL.getDialogService().showMessageBox(
-                            "🏆 برنده: " + winner.getName() + "\nدلیل: " + reason,
-                            () -> showWelcomeScreen()
+                            "Winner: " + winner.getName() + "\nReason: " + reason,
+                            RoyalWarApp.this::showWelcomeScreen
                     )
             );
         }
 
         @Override
         public void onResourceChanged(Player player, String resource, int newValue) {
-            Platform.runLater(() -> {
-                updateResourcesPanel();
-            });
+            Platform.runLater(RoyalWarApp.this::updateResourcesPanel);
         }
     }
-
-    // ------------------ ابزارهای کمکی UI ------------------
 
     private Button makeButton(String text, String bgColor, Runnable action) {
         Button b = new Button(text);
@@ -755,13 +706,7 @@ public class RoyalWarApp extends GameApplication {
         addUINode(root);
     }
 
-    public static void main(String[] args) {
-        launch(args);
-    }
-
-    // ------------------ کلاس‌های کمکی برای حل مشکلات ------------------
-
-    // اضافه کردن اینترفیس GameEventListener برای حل مشکل کامپایل
+    // Solving the compilation problem
     public interface GameEventListener {
         void onPlayerMoved(Player player, Position newPos);
         void onTurnEnded(Player prevPlayer, int nextPlayerId, int round);
@@ -773,17 +718,15 @@ public class RoyalWarApp extends GameApplication {
         void onResourceChanged(Player player, String resource, int newValue);
     }
 
-    // اضافه کردن اینترفیس برای اطلاع‌رسانی رویدادهای بازی
+    // Solving the compilation problem
     public interface GameEventNotifier {
         void addUIListener(GameEventListener listener);
     }
 
-    // اضافه کردن کلاس‌های ضروری برای حل مشکلات کامپایل
+    // Solving the compilation problem
     public static class GameConfig {
         public static final int MAP_SIZE = 16;
     }
-
-    // ======= Minimal stub model to compile standalone =======
 
     public static class Position {
         private int x, y;
@@ -802,22 +745,21 @@ public class RoyalWarApp extends GameApplication {
             this.id = id;
             this.name = name;
             this.position = pos;
-            // منابع اولیه پیش‌فرض
-            resources.put("طلا", 100);
-            resources.put("غذا", 100);
-            resources.put("چوب", 50);
-            resources.put("سنگ", 50);
+
+            //primary resources
+            resources.put("Gold", 100);
+            resources.put("Food", 100);
+            resources.put("Wood", 50);
+            resources.put("Stone", 50);
         }
         public int getId() { return id; }
         public String getName() { return name; }
         public Position getPosition() { return position; }
         public void setPosition(Position p) { this.position = p; }
-
-        // متدهای کمکی برای پنل منابع
-        public int getGold()  { return resources.getOrDefault("طلا", 0); }
-        public int getFood()  { return resources.getOrDefault("غذا", 0); }
-        public int getWood()  { return resources.getOrDefault("چوب", 0); }
-        public int getStone() { return resources.getOrDefault("سنگ", 0); }
+        public int getGold()  { return resources.getOrDefault("Gold", 0); }
+        public int getFood()  { return resources.getOrDefault("Food", 0); }
+        public int getWood()  { return resources.getOrDefault("Wood", 0); }
+        public int getStone() { return resources.getOrDefault("Stone", 0); }
         public Map<String, Integer> getResources() { return resources; }
     }
 
@@ -825,7 +767,7 @@ public class RoyalWarApp extends GameApplication {
 
     public static class Cell {
         private final CellType type;
-        private int ownerId = 0; // 0 یعنی آزاد
+        private int ownerId = 0;
         public Cell(CellType type) { this.type = type; }
         public CellType getType() { return type; }
         public int getOwnerId() { return ownerId; }
@@ -843,17 +785,18 @@ public class RoyalWarApp extends GameApplication {
                     grid[y][x] = new Cell(CellType.EMPTY);
                 }
             }
-            // یک دژ هیولا در مرکز
+
+            // A monster fortress in the center
             int c = size / 2;
             grid[c][c] = new Cell(CellType.MONSTER_STRONGHOLD);
 
-            // چند مانع ساده
+            // Some simple obstacles
             for (int i = 2; i < size - 2; i += 4) {
                 grid[2][i] = new Cell(CellType.OBSTACLE);
                 grid[size - 3][i] = new Cell(CellType.OBSTACLE);
             }
 
-            // چند قلعه بازیکن آزاد (بدون مالک) در گوشه‌ها
+            // Several free player castles (without owners) in the corners
             int[][] castles = {
                     {0, 0}, {size - 1, 0}, {0, size - 1}, {size - 1, size - 1}
             };
@@ -886,7 +829,6 @@ public class RoyalWarApp extends GameApplication {
 
     public static class GameManager implements GameEventNotifier {
         public enum Direction { UP, DOWN, LEFT, RIGHT }
-
         private final List<Player> players;
         private final TurnManager turnManager = new TurnManager();
         private final GameMap map;
@@ -924,7 +866,7 @@ public class RoyalWarApp extends GameApplication {
             }
             Cell cell = map.getCell(x, y);
             if (cell.getType() == CellType.OBSTACLE) {
-                // برخورد با مانع: حرکت انجام نشود
+                // Risk of collision with obstacle: do not perform movement
                 return;
             }
             p.setPosition(new Position(x, y));
@@ -952,7 +894,7 @@ public class RoyalWarApp extends GameApplication {
         private static GameManager last;
         public static void save(GameManager gm) { last = gm; }
         public static GameManager load() {
-            if (last == null) throw new RuntimeException("هیچ ذخیره‌ای وجود ندارد");
+            if (last == null) throw new RuntimeException("There are no reserves!");
             return last;
         }
     }
@@ -998,7 +940,13 @@ public class RoyalWarApp extends GameApplication {
     }
 
     public static class LobbyPersistence {
-        public void save(Lobby l) { /* no-op for this standalone file */ }
+        public void save(Lobby l) {
+            // ...
+        }
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 
 }

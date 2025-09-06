@@ -6,6 +6,6 @@ public class Mine extends Building {
 
     @Override
     protected void onUpgrade() {
-        // افزایش تولید سنگ
+        // Increase stone production
     }
 }

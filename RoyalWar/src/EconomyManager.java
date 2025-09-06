@@ -1,20 +1,26 @@
 public class EconomyManager {
 
-    // قیمت خرید هر واحد از مارکت (طلا)
+    // Purchase price per unit from the market (gold)
     public static int getBuyPrice(ResourceType type) throws InvalidTradeException {
         if (type == ResourceType.STONE) return 5;
         if (type == ResourceType.WOOD)  return 3;
         if (type == ResourceType.FOOD)  return 2;
-        throw new InvalidTradeException("این منبع در مارکت خرید/فروش نمی‌شود.");
+        throw new InvalidTradeException("This resource cannot be bought/sold on the market!");
     }
 
-    // قیمت فروش هر واحد به مارکت (طلا) — ساده: 50% قیمت خرید
+    // Selling price per unit to the market (gold) — simple: 50% of the purchase price
     public static int getSellPrice(ResourceType type) throws InvalidTradeException {
         return getBuyPrice(type) / 2;
     }
-
-    // مارکت فقط با این منابع کار می‌کند
+    
     public static boolean isTradable(ResourceType type) {
-        return type == ResourceType.STONE || type == ResourceType.WOOD || type == ResourceType.FOOD;
+        switch (type) {
+            case STONE:
+            case WOOD:
+            case FOOD:
+                return true;
+            default:
+                return false;
+        }
     }
 }

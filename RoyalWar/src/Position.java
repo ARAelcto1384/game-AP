@@ -17,7 +17,6 @@ public class Position implements Serializable {
         return new Position(x, y);
     }
 
-    // فاصله منهتن برای قوانین نزدیکی/حمله
     public int manhattanTo(Position other) {
         return Math.abs(x - other.x) + Math.abs(y - other.y);
     }

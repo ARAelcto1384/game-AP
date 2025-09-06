@@ -4,7 +4,6 @@ import java.util.Map;
 
 public class ResourceBundle {
     private EnumMap<ResourceType, Integer> resources;
-
     public Map<ResourceType, Integer> toMap() {
         return new HashMap<>(resources);
     }

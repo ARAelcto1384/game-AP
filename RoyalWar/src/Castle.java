@@ -1,5 +1,7 @@
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Castle {
     private Player owner;
@@ -15,7 +17,6 @@ public class Castle {
     private DefensiveStructure defensiveStructure;
     private PopularityManager popularityManager;
 
-    // بوست‌های فعال کارت‌های زمان‌دار
     private Map<ResourceType, TimedBoost> activeBoosts = new HashMap<>();
 
     public Castle(Player owner, Position position) {
@@ -23,45 +24,31 @@ public class Castle {
         this.position = position;
         this.resources = new ResourceBundle();
 
-        // منابع اولیه
+        // Primary sources
         resources.add(ResourceType.GOLD, 100);
         resources.add(ResourceType.STONE, 50);
         resources.add(ResourceType.WOOD, 50);
         resources.add(ResourceType.FOOD, 50);
         resources.add(ResourceType.FLAG, 0);
 
-        // ساختمان‌ها
+        // Buildings
         this.barracks = new Barracks(this);
         this.mine = new Mine(this);
         this.farm = new Farm(this);
         this.lumberMill = new LumberMill(this);
         this.defensiveStructure = new DefensiveStructure(this);
 
-        // سیستم رضایت
+        // Consent system
         this.popularityManager = new PopularityManager(this);
     }
 
-    // ==== مالک و موقعیت ====
     public Player getOwner() { return owner; }
     public void setOwner(Player newOwner) { this.owner = newOwner; }
     public Position getPosition() { return position; }
-
     public void setPosition(Position pos) { this.position = pos; }
-    public void setHealth(int h) { this.health = h; }
 
-    // ==== ساختمان‌ها ====
-    public Barracks getBarracks() { return barracks; }
-    public Mine getMine() { return mine; }
-    public Farm getFarm() { return farm; }
-    public LumberMill getLumberMill() { return lumberMill; }
-    public DefensiveStructure getDefensiveStructure() { return defensiveStructure; }
-
-    // ==== منابع ====
-    public ResourceBundle getResources() { return resources; }
-    public int getFlagCount() { return resources.get(ResourceType.FLAG); }
-
-    // ==== سلامت ====
     public int getHealth() { return health; }
+    public void setHealth(int h) { this.health = h; }
     public void takeDamage(int damage) {
         health -= damage;
         if (health < 0) health = 0;
@@ -72,10 +59,18 @@ public class Castle {
         if (health > maxHealth) health = maxHealth;
     }
 
-    // ==== رضایت ====
+    public Barracks getBarracks() { return barracks; }
+    public Mine getMine() { return mine; }
+    public Farm getFarm() { return farm; }
+    public LumberMill getLumberMill() { return lumberMill; }
+    public DefensiveStructure getDefensiveStructure() { return defensiveStructure; }
+
+
+    public ResourceBundle getResources() { return resources; }
+    public int getFlagCount() { return resources.get(ResourceType.FLAG); }
+
     public PopularityManager getPopularityManager() { return popularityManager; }
 
-    // ==== تولید منابع ====
     public void produceResources() {
         popularityManager.updatePopularity();
         double factor = popularityManager.getProductionFactor();
@@ -84,11 +79,17 @@ public class Castle {
         produceWithBoost(ResourceType.WOOD, lumberMill.getLevel() * 5, factor);
         produceWithBoost(ResourceType.FOOD, farm.getLevel() * 5, factor);
 
-        // کم‌کردن مدت بوست‌های فعال
-        activeBoosts.entrySet().removeIf(e -> e.getValue().decreaseAndCheckExpired());
+        List<ResourceType> expiredBoosts = new ArrayList<>();
+        for (Map.Entry<ResourceType, TimedBoost> entry : activeBoosts.entrySet()) {
+            if (entry.getValue().decreaseAndCheckExpired()) {
+                expiredBoosts.add(entry.getKey());
+            }
+        }
+        for (ResourceType type : expiredBoosts) {
+            activeBoosts.remove(type);
+        }
     }
 
-    // کمک متد برای تولید با بوست
     private void produceWithBoost(ResourceType type, int baseAmount, double baseFactor) {
         double totalFactor = baseFactor;
         if (activeBoosts.containsKey(type)) {
@@ -97,12 +98,10 @@ public class Castle {
         resources.add(type, (int)(baseAmount * totalFactor));
     }
 
-    // بوست کارت زمان‌دار
     public void addTimedBoost(ResourceType type, double multiplier, int rounds) {
         activeBoosts.put(type, new TimedBoost(multiplier, rounds));
     }
 
-    // ==== رویدادها ====
     public void applyProductionFactor(double factor) {
         popularityManager.updatePopularity();
         double baseFactor = popularityManager.getProductionFactor();
@@ -121,12 +120,10 @@ public class Castle {
         resources.add(ResourceType.FOOD, (int)(farm.getLevel() * 5 * totalFactor));
     }
 
-    // ==== پرچم ====
     public void addFlag() {
         resources.add(ResourceType.FLAG, 1);
     }
 
-    // ==== کلاس داخلی برای بوست‌ها ====
     private static class TimedBoost {
         private double multiplier;
         private int roundsLeft;
@@ -138,7 +135,6 @@ public class Castle {
 
         public double getMultiplier() { return multiplier; }
 
-        // کاهش مدت و بررسی انقضا
         public boolean decreaseAndCheckExpired() {
             roundsLeft--;
             return roundsLeft <= 0;

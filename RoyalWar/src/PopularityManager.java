@@ -1,11 +1,10 @@
 public class PopularityManager {
-
-    private Castle castle; // هر PopularityManager به یک قلعه وابسته است
-    private int popularity; // 0 تا 100
+    private Castle castle;
+    private int popularity;
 
     public PopularityManager(Castle castle) {
         this.castle = castle;
-        this.popularity = 50; // مقدار اولیه متوسط
+        this.popularity = 50;
     }
 
     public int getPopularity() {
@@ -13,7 +12,7 @@ public class PopularityManager {
     }
 
     public void updatePopularity() {
-        // امنیت = قدرت دفاع ساختمان دفاعی + 10 برای هر سطح پادگان
+        // Security = Defensive building defense strength + 10 for each level of barracks
         int security = 0;
         if (castle.getDefensiveStructure() != null) {
             security += castle.getDefensiveStructure().getDefensePower();
@@ -22,17 +21,16 @@ public class PopularityManager {
             security += (castle.getBarracks().getLevel() * 10);
         }
 
-        // غذا = مقدار غذای ذخیره‌شده (سقف تأثیرگذاری: 100)
+        // Food = amount of food stored (cap: 100)
         int foodSupply = Math.min(castle.getResources().get(ResourceType.FOOD), 100);
 
-        // فرمول ساده: میانگین امنیت و غذا، نرمال‌شده به بازه 0-100
+        // Average security and food
         popularity = (security + foodSupply) / 2;
-
         if (popularity > 100) popularity = 100;
         if (popularity < 0) popularity = 0;
     }
 
-    // ضریب اثرگذاری بر تولید: بین 0.5 و 1.5
+    //Effect popularity
     public double getProductionFactor() {
         if (popularity >= 80) return 1.5;
         if (popularity >= 60) return 1.2;

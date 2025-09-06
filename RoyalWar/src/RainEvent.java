@@ -1,8 +1,7 @@
 public class RainEvent extends Event {
     public RainEvent() {
-        super("باران", "افزایش ۲۰٪ تولید غذا به دلیل باران", 1.2);
+        super("Rain", "20% increase in food production due to rain", 1.2);
     }
-
     @Override
     public void applyTo(Castle c) {
         if (c == null) return;

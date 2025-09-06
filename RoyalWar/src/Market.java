@@ -1,7 +1,7 @@
 public class Market {
-    private Castle castle;           // مارکت وابسته به یک قلعه
-    private Position position;       // محل مارکت (روی همان خانه قلعه برای سادگی)
-    private int accessRange = 1;     // فاصله منهتن مجاز برای دسترسی به مارکت
+    private Castle castle;
+    private Position position;
+    private int accessRange = 1;
 
     public Market(Castle castle) {
         this.castle = castle;
@@ -12,13 +12,12 @@ public class Market {
     public Castle getCastle() { return castle; }
 
     private void ensureAccess(Player player) throws MarketAccessException {
-        // بازیکن باید مالک همین قلعه باشد و نزدیک مارکت
         if (player.getId() != castle.getOwner().getId()) {
-            throw new MarketAccessException("دسترسی به این مارکت مجاز نیست.");
+            throw new MarketAccessException("Access to this market is not allowed!");
         }
         int dist = player.getPosition().manhattanTo(position);
         if (dist > accessRange) {
-            throw new MarketAccessException("برای استفاده از مارکت باید نزدیک قلعه باشی.");
+            throw new MarketAccessException("You have to be near the castle to use the market!");
         }
     }
 
@@ -27,7 +26,7 @@ public class Market {
 
         if (amount <= 0) return;
         if (!EconomyManager.isTradable(type)) {
-            throw new InvalidTradeException("این منبع قابل خرید از مارکت نیست.");
+            throw new InvalidTradeException("This resource cannot be purchased from the market!");
         }
 
         ensureAccess(player);
@@ -36,7 +35,7 @@ public class Market {
         ResourceBundle res = castle.getResources();
 
         if (!res.consume(ResourceType.GOLD, price)) {
-            throw new NotEnoughGoldException("طلای کافی برای خرید وجود ندارد.");
+            throw new NotEnoughGoldException("There is not enough gold to buy!");
         }
         res.add(type, amount);
     }
@@ -46,14 +45,14 @@ public class Market {
 
         if (amount <= 0) return;
         if (!EconomyManager.isTradable(type)) {
-            throw new InvalidTradeException("این منبع قابل فروش به مارکت نیست.");
+            throw new InvalidTradeException("This resource cannot be sold on the market!");
         }
 
         ensureAccess(player);
 
         ResourceBundle res = castle.getResources();
         if (res.get(type) < amount) {
-            throw new NotEnoughResourceException("مقدار کافی از منبع برای فروش موجود نیست.");
+            throw new NotEnoughResourceException("There is not enough of the resource available for sale!");
         }
 
         int income = EconomyManager.getSellPrice(type) * amount;

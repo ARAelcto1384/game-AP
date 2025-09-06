@@ -9,22 +9,20 @@ public class CardManager {
         this.availableCards = new ArrayList<>();
         this.usedCards = new ArrayList<>();
 
-        // 9 کارت زمان‌دار (سنگ، چوب، غذا × سه شدت متفاوت)
-        availableCards.add(new TimedCard("سنگ +20%", "افزایش 20٪ تولید سنگ", ResourceType.STONE, 1.2, 3));
-        availableCards.add(new TimedCard("سنگ +50%", "افزایش 50٪ تولید سنگ", ResourceType.STONE, 1.5, 3));
-        availableCards.add(new TimedCard("سنگ +100%", "افزایش 100٪ تولید سنگ", ResourceType.STONE, 2.0, 2));
+        // 9 time cards
+        availableCards.add(new TimedCard("Stone +20%", "increase 20٪ produce stone.", ResourceType.STONE, 1.2, 3));
+        availableCards.add(new TimedCard("Stone +50%", "increase 50٪ produce stone.", ResourceType.STONE, 1.5, 3));
+        availableCards.add(new TimedCard("Stone +100%", "increase 100٪ produce stone.", ResourceType.STONE, 2.0, 2));
+        availableCards.add(new TimedCard("Wood +20%", "increase 20٪ produce wood.", ResourceType.WOOD, 1.2, 3));
+        availableCards.add(new TimedCard("Wood +50%", "increase 50٪ produce wood.", ResourceType.WOOD, 1.5, 3));
+        availableCards.add(new TimedCard("Wood +100%", "increase 100٪ produce wood.", ResourceType.WOOD, 2.0, 2));
+        availableCards.add(new TimedCard("Food +20%", "increase 20٪ produce food.", ResourceType.FOOD, 1.2, 3));
+        availableCards.add(new TimedCard("Food +50%", "increase 50٪ produce food.", ResourceType.FOOD, 1.5, 3));
+        availableCards.add(new TimedCard("Food +100%", "increase 100٪ produce food.", ResourceType.FOOD, 2.0, 2));
 
-        availableCards.add(new TimedCard("چوب +20%", "افزایش 20٪ تولید چوب", ResourceType.WOOD, 1.2, 3));
-        availableCards.add(new TimedCard("چوب +50%", "افزایش 50٪ تولید چوب", ResourceType.WOOD, 1.5, 3));
-        availableCards.add(new TimedCard("چوب +100%", "افزایش 100٪ تولید چوب", ResourceType.WOOD, 2.0, 2));
-
-        availableCards.add(new TimedCard("غذا +20%", "افزایش 20٪ تولید غذا", ResourceType.FOOD, 1.2, 3));
-        availableCards.add(new TimedCard("غذا +50%", "افزایش 50٪ تولید غذا", ResourceType.FOOD, 1.5, 3));
-        availableCards.add(new TimedCard("غذا +100%", "افزایش 100٪ تولید غذا", ResourceType.FOOD, 2.0, 2));
-
-        // 2 کارت فوری (یکی انتخاب می‌شود)
-        availableCards.add(new InstantCard("منابع فوری", "افزایش فوری 1000 واحد سنگ، چوب و غذا", ResourceType.STONE, 1000));
-        availableCards.add(new InstantCard("طلای فوری", "افزایش فوری 10 کیلو طلا", ResourceType.GOLD, 10));
+        // 2 quick cards
+        availableCards.add(new InstantCard("Immediate resources ", "Immediate increase 1000 units of stone, wood and food.", ResourceType.STONE, 1000));
+        availableCards.add(new InstantCard("Immediate gold", "Immediate increase 10 kilos of gold.", ResourceType.GOLD, 10));
     }
 
     public List<Card> getAvailableCards() { return availableCards; }
@@ -32,10 +30,10 @@ public class CardManager {
     public void useCard(Card card, Player player, GameManager gm)
             throws CardNotAvailableException, CardAlreadyUsedException {
         if (!availableCards.contains(card)) {
-            throw new CardNotAvailableException("این کارت در دسترس نیست.");
+            throw new CardNotAvailableException("This card is not available!");
         }
         if (usedCards.contains(card)) {
-            throw new CardAlreadyUsedException("این کارت قبلاً استفاده شده است.");
+            throw new CardAlreadyUsedException("This card has already been used!");
         }
         card.applyEffect(player, gm);
         usedCards.add(card);

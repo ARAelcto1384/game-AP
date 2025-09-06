@@ -3,14 +3,14 @@ import java.util.List;
 
 public class TurnManager {
     private int currentRound = 1;
-    private int currentIndex = 0;     // اندیس بازیکن جاری در players
+    private int currentIndex = 0;
     private int playersCount = GameConfig.MIN_PLAYERS;
 
     private List<RoundListener> listeners = new ArrayList<>();
 
     public void configurePlayersCount(int count) {
         if (count < GameConfig.MIN_PLAYERS || count > GameConfig.MAX_PLAYERS) {
-            throw new IllegalArgumentException("تعداد بازیکنان باید بین 2 تا 4 باشد.");
+            throw new IllegalArgumentException("The number of players must be between 2 and 4!");
         }
         this.playersCount = count;
     }

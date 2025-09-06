@@ -9,7 +9,7 @@ public class GameLogger implements Serializable {
     public void log(String msg) {
         GameLogEntry entry = new GameLogEntry(msg);
         entries.add(entry);
-        System.out.println(entry); // چاپ همزمان در کنسول
+        System.out.println(entry);
     }
 
     public List<GameLogEntry> getEntries() { return entries; }

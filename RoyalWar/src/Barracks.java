@@ -17,7 +17,7 @@ public class Barracks extends Building {
     public void trainUnit(UnitType type) throws NotEnoughGoldException, UnitNotAvailableException {
         Unit unit = createUnit(type);
         if (!owner.getResources().consume(ResourceType.GOLD, unit.getCostGold())) {
-            throw new NotEnoughGoldException("طلای کافی برای آموزش " + unit.getName() + " وجود ندارد.");
+            throw new NotEnoughGoldException("There is not enough gold to train " + unit.getName() + " !");
         }
         trainedUnits.add(unit);
     }
@@ -36,10 +36,9 @@ public class Barracks extends Building {
         return c;
     }
 
-    // برداشت n واحد از نوع مشخص برای تشکیل نیروی حمله
     public List<Unit> takeUnits(UnitType type, int n) throws UnitNotAvailableException {
         if (n <= 0) return new ArrayList<>();
-        if (count(type) < n) throw new UnitNotAvailableException("تعداد کافی از " + type + " موجود نیست.");
+        if (count(type) < n) throw new UnitNotAvailableException("There are not enough " + type + "s available!");
         List<Unit> out = new ArrayList<>();
         Iterator<Unit> it = trainedUnits.iterator();
         while (it.hasNext() && n > 0) {
@@ -53,7 +52,6 @@ public class Barracks extends Building {
         return out;
     }
 
-    // بازگرداندن نیروهای بازمانده پس از نبرد
     public void addUnits(List<Unit> units) {
         if (units == null) return;
         trainedUnits.addAll(units);
@@ -66,7 +64,7 @@ public class Barracks extends Building {
             case CAVALRY: return new Cavalry();
             case SPY: return new Spy();
             case MERCHANT: return new Merchant();
-            default: throw new UnitNotAvailableException("نوع نیروی درخواستی موجود نیست.");
+            default: throw new UnitNotAvailableException("The requested force type is not available!");
         }
     }
 
@@ -81,6 +79,6 @@ public class Barracks extends Building {
 
     @Override
     protected void onUpgrade() {
-        // ظرفیت/سرعت آموزش می‌تواند در آینده افزایش یابد
+        // Training capacity/speed can be increased in the future
     }
 }

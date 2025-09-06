@@ -37,7 +37,6 @@ public class GameMap {
     }
 
     public void placeMonsterStronghold() {
-        // مرکز 2×2 برای نقشه زوج
         int c1 = size / 2 - 1;
         int c2 = size / 2;
         setStrongholdCell(c1, c1);

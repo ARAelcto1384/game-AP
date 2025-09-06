@@ -6,6 +6,6 @@ public class Farm extends Building {
 
     @Override
     protected void onUpgrade() {
-        // افزایش تولید غذا
+        // Increase food production
     }
 }

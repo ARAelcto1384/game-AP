@@ -3,7 +3,7 @@ public class DefensiveStructure extends Building {
 
     public DefensiveStructure(Castle owner) {
         super("Defensive Structure", 60, owner);
-        this.defensePower = 10; // قدرت پایه دفاع
+        this.defensePower = 10;
     }
 
     public int getDefensePower() {

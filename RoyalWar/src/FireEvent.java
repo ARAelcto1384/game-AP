@@ -1,5 +1,5 @@
 public class FireEvent extends Event {
     public FireEvent() {
-        super("آتش‌سوزی", "کاهش ۳۰٪ تولید همه منابع به دلیل آتش‌سوزی", 0.7);
+        super("Fire", "30% reduction in all resource production due to fire", 0.7);
     }
 }

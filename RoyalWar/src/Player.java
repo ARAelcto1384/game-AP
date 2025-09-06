@@ -6,7 +6,7 @@ public class Player extends Entity {
     private int actionPoints = 0;
     private static final int ACTIONS_PER_TURN = 1;
 
-    private int score = 0; // امتیاز بازیکن
+    private int score = 0;
 
     public Player(int id, String name, Position startPos, Position castlePos) {
         super(startPos);
@@ -22,14 +22,12 @@ public class Player extends Entity {
     public boolean hasActionPoint() { return actionPoints > 0; }
     public void resetActionForTurn() { this.actionPoints = ACTIONS_PER_TURN; }
     public void consumeActionPoint() throws NoActionPointsException {
-        if (actionPoints <= 0) throw new NoActionPointsException("هیچ حرکت باقی نمانده است.");
+        if (actionPoints <= 0) throw new NoActionPointsException("There is no movement left.");
         actionPoints--;
     }
 
     public int getScore() { return score; }
     public void addScore(int s) { score += s; }
-
-    public void setPosition(Position pos) { this.position = pos; }
     public void setScore(int s) { this.score = s; }
 }
 

@@ -12,7 +12,7 @@ public class MonsterAI implements RoundListener {
         int effectivePower = (int) Math.max(1, baseAttackPower * (energy / 100.0));
 
         if (attackIntervalRounds > 0 && round % attackIntervalRounds == 0) {
-            // انتخاب یک قلعه به صورت تصادفی از همه بازیکنان به جز current
+            // Choose a castle randomly from all players except the current one
             Player current = gm.getCurrentPlayer();
             Player target = null;
             int tries = 0;

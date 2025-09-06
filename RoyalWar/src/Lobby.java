@@ -1,5 +1,5 @@
 public class Lobby {
-    private String[] slots = new String[4]; // null یعنی خالی
+    private String[] slots = new String[4];
 
     public boolean addPlayer(String username) {
         if (isInLobby(username)) return true;
